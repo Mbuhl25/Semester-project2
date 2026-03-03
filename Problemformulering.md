@@ -12,17 +12,3 @@ Vi evaluerer på hastigheden, som robotten kan løse terningen på, og hvor ofte
 
 Hvordan kan en UR5‑robot programmeret i C++ autonomt manipulere og løse en Rubik’s Cube ved brug af computer vision til farvegenkendelse, Python‑baserede løsningsalgoritmer og kinematiske transformationer til korrekt orientering af terningen? Projektet undersøger, hvordan hardware‑faktorer som gripperstyrke, servo‑kontrol og robotpræcision påvirker systemets evne til at udføre stabile og nøjagtige rotationer, og evaluerer den samlede løsning ud fra hastighed, præcision og fejlrate.
 
-
-
-
-Der skal roteres
-
-Der er nogle variabler der kan gå galt
-
-Hvordan evaluerer man om rubiks terningen er god
- hastighed
- Korrekt
- 
-
-Diskuter hele processen i problemformulering
-
