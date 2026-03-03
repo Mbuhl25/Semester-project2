@@ -100,30 +100,6 @@ bot_right_x = midt_x + 30
 bot_right_y = midt_y + 30
 
 
-color = ""
-
-for i in range(9): 
-    if i == 0:
-        color += check_color(hsv, top_left_x, top_left_y)
-    elif i == 1:
-        color += check_color(hsv, top_midt_x, top_midt_y)
-    elif i == 2:
-        color += check_color(hsv, top_rigtht_x, top_rigtht_y)
-    elif i == 3:
-        color += check_color(hsv, midt_left_x, midt_left_y)
-    elif i == 4:
-        color += check_color(hsv, midt_x, midt_y)
-    elif i == 5:
-        color += check_color(hsv, midt_right_x, midt_right_y)
-    elif i == 6:
-        color += check_color(hsv, bot_left_x, bot_left_y)
-    elif i == 7:
-        color += check_color(hsv, bot_midt_x, bot_midt_y)
-    elif i == 8:
-        color += check_color(hsv, bot_right_x, bot_right_y)
-
-
-
 def show_points():
     # midtpunktet:
     cv2.circle(frame, (midt_x, midt_y), 3, (0, 0, 255), -1)
