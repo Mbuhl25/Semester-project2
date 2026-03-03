@@ -1,9 +1,9 @@
-upper = ""
-right = ""
-front = ""
-down = ""
-left = ""
-back = ""
+upper = "OORYYYYWO"
+right = "GRBYOOWRO"
+front = "GBYRGBYRG"
+down = "RBROWWOYW"
+left = "YGRGRGGBB"
+back = "WWBGBWBOW"
 scrambled = upper + right + front + down + left + back
 print(scrambled)
 

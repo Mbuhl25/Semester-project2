@@ -46,7 +46,11 @@ git add <fil_1> <fil_2> ... <fil_n>
 
 git add . # tilføjer alle ændringer til staging
 ```
-derefter skal du commit. Det er ligesom et checkpoint
+derefter skal du commit. Det er ligesom et checkpoint.
+```
+git commit
+```
+Så kommer du ind i din text editor, og der skriver du en commit besked.
 
 # Other
 ## libraries to look at
