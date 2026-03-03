@@ -100,31 +100,6 @@ bot_right_x = midt_x + 30
 bot_right_y = midt_y + 30
 
 
-
-
-
-# midtpunktet:
-cv2.circle(frame, (midt_x, midt_y), 5, (0, 0, 255), -1)
-# Top left punktet:
-cv2.circle(frame, (top_left_x, top_left_y), 5, (0, 255, 0), -1)
-# Midt left punktet:
-cv2.circle(frame, (midt_left_x, midt_left_y), 5, (255, 0, 0), -1)
-# Bot left punktet:
-cv2.circle(frame, (bot_left_x, bot_left_y), 5, (0, 255, 255), -1)
-# Top midt punktet:
-cv2.circle(frame, (top_midt_x, top_midt_y), 5, (255, 255, 0), -1)
-# Bot midt punktet:
-cv2.circle(frame, (bot_midt_x, bot_midt_y), 5, (255, 0, 255), -1)
-# Top right punktet:
-cv2.circle(frame, (top_rigtht_x, top_rigtht_y), 5, (255, 0, 0), -1)
-# Midt right punktet:
-cv2.circle(frame, (midt_right_x, midt_right_y), 5, (0, 255, 0), -1)
-# Bot right punktet:
-cv2.circle(frame, (bot_right_x, bot_right_y), 5, (0, 0, 255), -1)
-
-cv2.imshow("camera", frame)
-
-
 color = ""
 
 for i in range(9): 
@@ -148,12 +123,7 @@ for i in range(9):
         color += check_color(hsv, bot_right_x, bot_right_y)
 
 
-print(color)
 
-cv2.waitKey(0)
-cap.release()
-cv2.destroyAllWindows()
-=======
 def show_points():
     # midtpunktet:
     cv2.circle(frame, (midt_x, midt_y), 3, (0, 0, 255), -1)
@@ -205,7 +175,34 @@ def get_string():
             x += check_color(hsv, bot_right_x, bot_right_y)
     return x
 
+def align_cube():
+    while True:
+        ret, frame = cap.read()
+        # midtpunktet:
+        cv2.circle(frame, (midt_x, midt_y), 3, (0, 0, 255), -1)
+        # Top left punktet:
+        cv2.circle(frame, (top_left_x, top_left_y), 3, (0, 255, 0), -1)
+        # Midt left punktet:
+        cv2.circle(frame, (midt_left_x, midt_left_y), 3, (255, 0, 0), -1)
+        # Bot left punktet:
+        cv2.circle(frame, (bot_left_x, bot_left_y), 3, (0, 255, 255), -1)
+        # Top midt punktet:
+        cv2.circle(frame, (top_midt_x, top_midt_y), 3, (255, 255, 0), -1)
+        # Bot midt punktet:
+        cv2.circle(frame, (bot_midt_x, bot_midt_y), 3, (255, 0, 255), -1)
+        # Top right punktet:
+        cv2.circle(frame, (top_rigtht_x, top_rigtht_y), 3, (255, 0, 0), -1)
+        # Midt right punktet:
+        cv2.circle(frame, (midt_right_x, midt_right_y), 3, (0, 255, 0), -1)
+        # Bot right punktet:
+        cv2.circle(frame, (bot_right_x, bot_right_y), 3, (0, 0, 255), -1)
+
+        cv2.imshow("camera", frame)
+        cv2.waitKey(100)
+        
+
+
 
 print(get_string())
 show_points()
->>>>>>> magnus
+#align_cube()
