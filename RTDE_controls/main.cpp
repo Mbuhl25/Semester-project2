@@ -1,10 +1,20 @@
 // Include the correct header for the control interface:
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/rtde_receive_interface.h>
+#include <iostream>
 
 int main() {
-// The constructor simply takes the IP address of the Robot
+// Get current position
+ur_rtde::RTDEReceiveInterface rtde_receive("192.168.1.11");
+std::vector<double> joint_positions = rtde_receive.getActualQ();
+
+for (double q : joint_positions) {
+    std::cout << q << ", ";
+}
+
+
+// move robot to position
 ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-// First argument is the pose 6d vector followed by speed and acceleration
-rtde_control.moveL({0, -192.46, 602.02, 0, 2.222, -2.222}, 0.5, 0.2);
+rtde_control.moveL({0.540398, -1.07038, -0.0211795, 5.34891, 0.00659544, -0.650891}, 0.5, 0.2);
+
 }
