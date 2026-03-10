@@ -64,6 +64,25 @@ git push origin HEAD:<Navn_på_din_feature>
 ```
 Alle fejl der kommer her spørger du bare chat om. Det kan gå galt på mange måder når ens branch er foran eller bagved eller ved siden af eller hvad ved jeg?!?!
 
+Hvis det virker og printer noget alla:
+```
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 28 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 934 bytes | 934.00 KiB/s, done.
+Total 4 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+remote: 
+remote: Create a pull request for 'Feature/Readme' on GitHub by visiting:
+remote:      https://github.com/Mbuhl25/Semester-project2/pull/new/Feature/Readme
+remote: 
+To https://github.com/Mbuhl25/Semester-project2.git
+ * [new branch]      HEAD -> Feature/<Navn_pa_dit_repo>
+```
+
+Så kan du gå ind på github.com og så burde der komme en gul boks i toppen af det hele, der fortæller, at du er klar til at lave et pull request. Tryk på "create Pull Request" og så Næste "Create Pull Request" og så merge. Hvis der kommer merge conflicts, så spørg chat, men ellers burde det bare merge fint.
+
 # Other
 ## libraries to look at
 [cv2 library](https://pypi.org/project/opencv-python/)
