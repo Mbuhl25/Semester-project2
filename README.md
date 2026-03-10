@@ -26,7 +26,7 @@ Inden du begynder på din opgave, så kan du lige skrive
 ```
 git pull
 ```
-
+## Lav ændringer
 Så laver du en *feature branch*, til den specifikke opgave du skal lave
 ```
 git checkout -b Feature/<NameOfFeature>
@@ -51,6 +51,18 @@ derefter skal du commit. Det er ligesom et checkpoint.
 git commit
 ```
 Så kommer du ind i din text editor, og der skriver du en commit besked.
+
+* i Nano: skriv din commit besked efterfulgt af ctl+s, ctl+x
+* i vim: tryk "i", skriv din commit besked, efterfulgt af esc, "wq!" enter.
+
+Nu har du lavet et commit. Dem kan du lave så mange af, som du har brug for
+
+## Pushing
+Når du er tilfreds med dine ændringer skal du pushe. Det gør du på denne måde.
+```
+git push origin HEAD:<Navn_på_din_feature>
+```
+Alle fejl der kommer her spørger du bare chat om. Det kan gå galt på mange måder når ens branch er foran eller bagved eller ved siden af eller hvad ved jeg?!?!
 
 # Other
 ## libraries to look at
