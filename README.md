@@ -81,7 +81,13 @@ To https://github.com/Mbuhl25/Semester-project2.git
  * [new branch]      HEAD -> Feature/<Navn_pa_dit_repo>
 ```
 
-Så kan du gå ind på github.com og så burde der komme en gul boks i toppen af det hele, der fortæller, at du er klar til at lave et pull request. Tryk på "create Pull Request" og så Næste "Create Pull Request" og så merge. Hvis der kommer merge conflicts, så spørg chat, men ellers burde det bare merge fint.
+Så kan du gå ind på github.com og enten:
+* er der en gul boks i toppen af det hele, hvor du kan trykke "*Open pull request*"
+* ellers kan du trykke på "branches" til højre for drop-down menuen, hvorefter du vælger din branch. Inde på den branch er en boks "**This branch is 1 commit ahead of and 3 commits behind main.**", der trykker du contribute, og "*Open pull request*"
+
+Så følger du bare de grønne knapper. "*Create pull request*" og derefter "*Merge pull request*".
+
+
 
 # Other
 ## libraries to look at
