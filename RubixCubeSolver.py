@@ -1,12 +1,11 @@
-upper = "YYYYYYYYY"
-right = "OBBOOOOOO"
-front = "GGGGGGGGG"
-down = "WWWWWWWWW"
-left = "BRRRRRRRR"
-back = "ROOBBBBBB"
+upper = ""
+right = ""
+front = ""
+down = ""
+left = ""
+back = ""
 scrambled = upper + right + front + down + left + back
-scrambled = "GBBOYBGBOGOROOWOYWRYYRGGYGGBRWWWGWWRWYYBRYBROYRROBWBGO"
-print("scrambled = ", scrambled)
+print(scrambled)
 
 scrambled_new = ""
 for i in range(len(scrambled)):
@@ -57,4 +56,5 @@ print("total L = ", totalL)
 print("total B = ", totalB)
 
 
+import kociemba
 print(kociemba.solve(scrambled_new))

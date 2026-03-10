@@ -10,7 +10,6 @@ requires-python = ">=3.12"
 dependencies = [
     "opencv-python (>=4.13.0.92,<5.0.0.0)",
     "kociemba (>=1.2.1,<2.0.0)",
-    "numpy (>=2.4.2,<3.0.0)"
 ]
 
 
