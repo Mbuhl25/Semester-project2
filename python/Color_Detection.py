@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import time
 import kociemba
+from collections import Counter
 
 # upper og lower til alle farverne i HSV format, som bruges til at detektere farverne i check_color funktionen
 blue_lower = np.array([85, 60, 60])
@@ -45,6 +46,7 @@ def check_color(hsv, x, y):
         return punkt
     else:
         return str("0")  
+
 def check_color_5_points(hsv, x, y, offset=5):
     colors = [
         check_color(hsv, x, y),             # midten
@@ -53,6 +55,13 @@ def check_color_5_points(hsv, x, y, offset=5):
         check_color(hsv, x, y - offset),    # op
         check_color(hsv, x, y + offset)     # ned
     ] 
+    count = Counter(colors)
+    most_common_color, ammount = count.most_common(1)[0]
+    
+    if ammount >= 3 and most_common_color != "0":
+        return most_common_color
+    else:
+        return "0"
     
     
     
@@ -93,65 +102,36 @@ midt_right_y = midt_y
 bot_right_x = midt_x + afstand
 bot_right_y = midt_y + afstand
 
-
-# viser de 9 punkter på billedet, som bruges til at tjekke farverne på det billede, og for at se hvor de 9 punkter er på billedet
-
-
-
+punkter = [
+    (top_left_x, top_left_y),
+    (top_midt_x, top_midt_y),
+    (top_rigtht_x, top_rigtht_y),
+    (midt_left_x, midt_left_y),
+    (midt_x, midt_y),
+    (midt_right_x, midt_right_y),
+    (bot_left_x, bot_left_y),
+    (bot_midt_x, bot_midt_y),
+    (bot_right_x, bot_right_y)
+    ]
 
 # get_string funktionen, som tjekker farverne på de 9 punkter, og returnere en string med de farver der er på de 9 punkter
 def get_string():
     ret, frame = cap.read()
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     x = ""
-    for i in range(9): 
-        if i == 0:
-            x += check_color(hsv, top_left_x, top_left_y)
-        elif i == 1:
-            x += check_color(hsv, top_midt_x, top_midt_y)
-        elif i == 2:
-            x += check_color(hsv, top_rigtht_x, top_rigtht_y)
-        elif i == 3:
-            x += check_color(hsv, midt_left_x, midt_left_y)
-        elif i == 4:
-            x += check_color(hsv, midt_x, midt_y)
-        elif i == 5:
-            x += check_color(hsv, midt_right_x, midt_right_y)
-        elif i == 6:
-            x += check_color(hsv, bot_left_x, bot_left_y)
-        elif i == 7:
-            x += check_color(hsv, bot_midt_x, bot_midt_y)
-        elif i == 8:
-            x += check_color(hsv, bot_right_x, bot_right_y)
+    for px, py in punkter:
+        x += check_color_5_points(hsv, px, py)
     return x
 
 # align_cube funktionen, som viser de 9 punkter på en video så man kan sætte op rubikscuben så de 9 punkter er på de rigtige steder
 def align_cube():
     while True:
         ret, frame = cap.read()
-        # midtpunktet:
-        cv2.circle(frame, (midt_x, midt_y), 3, (0, 0, 255), -1)
-        # Top left punktet:
-        cv2.circle(frame, (top_left_x, top_left_y), 3, (0, 255, 0), -1)
-        # Midt left punktet:
-        cv2.circle(frame, (midt_left_x, midt_left_y), 3, (255, 0, 0), -1)
-        # Bot left punktet:
-        cv2.circle(frame, (bot_left_x, bot_left_y), 3, (0, 255, 255), -1)
-        # Top midt punktet:
-        cv2.circle(frame, (top_midt_x, top_midt_y), 3, (255, 255, 0), -1)
-        # Bot midt punktet:
-        cv2.circle(frame, (bot_midt_x, bot_midt_y), 3, (255, 0, 255), -1)
-        # Top right punktet:
-        cv2.circle(frame, (top_rigtht_x, top_rigtht_y), 3, (255, 0, 0), -1)
-        # Midt right punktet:
-        cv2.circle(frame, (midt_right_x, midt_right_y), 3, (0, 255, 0), -1)
-        # Bot right punktet:
-        cv2.circle(frame, (bot_right_x, bot_right_y), 3, (0, 0, 255), -1)
+        for px, py in punkter:
+            cv2.circle(frame, (px, py), 3, (0, 255, 0), -1)
 
         cv2.imshow("camera", frame)
-
         key = cv2.waitKey(1) & 0xFF
-
         if key == ord('q'):   # tryk q når kuben er aligned
             break
         
@@ -159,7 +139,6 @@ def align_cube():
 def detect_cube():
     x = ""
     expected = ["Y", "O", "G", "W", "R", "B"]
-
     for i in range(6):
         while True:
             print("Du skal nu vise side ", expected[i])
@@ -176,7 +155,6 @@ def detect_cube():
                     time.sleep(1)
                     continue
             else:    
-                
                 print("korrekt side")
                 x += string
                 print("Dette er den nuværende string: ", string)
@@ -208,7 +186,6 @@ def Rename(x):
             scrambled_new += "B"
 
     print(scrambled_new)
-
     totalU = 0
     totalR = 0
     totalF = 0
@@ -236,7 +213,5 @@ def Rename(x):
     print("total B = ", totalB)
     return scrambled_new
 
-#show_points()
-#align_cube()
-#print(get_string())
+
 print(kociemba.solve(Rename(detect_cube())))
