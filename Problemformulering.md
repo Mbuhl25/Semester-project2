@@ -12,3 +12,7 @@ Vi evaluerer på hastigheden, som robotten kan løse terningen på, og hvor ofte
 
 Hvordan kan en UR5‑robot programmeret i C++ autonomt manipulere og løse en Rubik’s Cube ved brug af computer vision til farvegenkendelse, Python‑baserede løsningsalgoritmer og kinematiske transformationer til korrekt orientering af terningen? Projektet undersøger, hvordan hardware‑faktorer som gripperstyrke, servo‑kontrol og robotpræcision påvirker systemets evne til at udføre stabile og nøjagtige rotationer, og evaluerer den samlede løsning ud fra hastighed, præcision og fejlrate.
 
+
+How can a UR5-robot, programmed in C++ solve a rubix cube autonomously using color recognition computervision.
+
+With the ultimate goal of solving the cube under 15 minutes
