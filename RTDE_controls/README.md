@@ -70,7 +70,7 @@ int main() {
 ```
 ## First time
 Then when you want to compile it do like this in the terminal. Start in the root of the semesterproject, so the file ends with 
-```Semester-project2/```
+```Semester-project2/RTDE_controls```
 
 Do the following
 ```
@@ -87,3 +87,25 @@ Whenever you make changes to the .cpp files, then you just have to run in the bu
 ```
 make -j
 ```
+
+# Example scripts:
+
+Get current joint rotations:
+Du modtager koordinaterne i radianer som rotationer {base, Shoulder, Elbow, Wrist1, Wrist2, Wrist3}
+```
+// C++
+RTDEReceiveInterface rtde_receive("192.168.1.11");
+std::vector<double> joint_positions = rtde_receive.getActualQ();
+```
+
+Move robot to position:
+Funktionen tager som input i radianer som rotationer {base, Shoulder, Elbow, Wrist1, Wrist2, Wrist3}
+```
+// C++
+RTDEControlInterface rtde_control("192.168.1.11");
+rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
+```
+
+
+# references
+[SDU_Robotics_UR_RTDE](https://sdurobotics.gitlab.io/ur_rtde/installation/installation.html)
