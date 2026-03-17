@@ -24,7 +24,7 @@ pink_lower = np.array([135, 60, 60])
 pink_upper = np.array([175, 255, 255])
 
 
-# check_color funktionen, som tjekker hvilken farve der er på det punkt der bliver tjekket, og returnere en string med den farve der er på det punkt
+#checker hvilken farve det er på et punkt
 def check_color(hsv, x, y):    
     if cv2.inRange(hsv, blue_lower, blue_upper)[y, x] == 255:
         punkt = "B"
@@ -70,9 +70,6 @@ cap = cv2.VideoCapture(1)
 
 ret, frame = cap.read()
 
-# konverterer billedet til HSV format, som bruges til at detektere farverne i check_color funktionen
-
-# finder midtpunktet og de 8 punkter omkring midtpunktet, som bruges til at tjekke farverne på det billede
 h, w, _ = frame.shape
 midt_x = w // 2 - 60
 midt_y = h // 2 - 30
@@ -132,18 +129,31 @@ def align_cube():
 
         cv2.imshow("camera", frame)
         key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):   # tryk q når kuben er aligned
+        if key == ord('q'):   
+            break
+        
+def align_cube_timer():
+    start = time.time()
+    delay = 5
+    while True:
+        ret, frame = cap.read()
+        for px, py in punkter:
+            cv2.circle(frame, (px, py), 3, (0, 255, 0), -1)
+
+        cv2.imshow("camera", frame)
+        cv2.waitKey(10)
+        if time.time() - start > delay:
             break
         
 
-def detect_cube():
+def detect_cube_loop():
     x = ""
     expected = ["Y", "O", "G", "W", "R", "B"]
     for i in range(6):
         while True:
             print("Du skal nu vise side ", expected[i])
 
-            align_cube()
+            align_cube_timer()
             string = get_string()
             print(string)
             if string[4] != expected[i]:
@@ -162,6 +172,29 @@ def detect_cube():
 
                 break
     return x
+
+def detect_cube_Once(farve):
+    x = ""
+    while True:
+        print("Du skal nu vise side ", farve)
+
+        align_cube()
+        string = get_string()
+        print(string)
+        if string[4] != farve:
+            print(f"forkert farve på midtpunktet, forventet {farve}, fundet {string[4]}")
+            time.sleep(1)
+            continue
+        if "0" in string:
+                print("der er en eller flere farver der ikke kunne detekteres, prøv igen")
+                time.sleep(1)
+                continue
+        else:    
+            print("korrekt side")
+            print("Dette er den nye string: ", string)
+
+            break
+    return string
 
 def Rename(x):
     scrambled = x
@@ -214,5 +247,5 @@ def Rename(x):
     return scrambled_new
 
 
-print(kociemba.solve(Rename(detect_cube())))
+print(kociemba.solve(Rename(detect_cube_loop())))
 #align_cube()
