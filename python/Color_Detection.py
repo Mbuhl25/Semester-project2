@@ -66,7 +66,7 @@ def check_color_5_points(hsv, x, y, offset=5):
     
     
 # åbner kameraet og læser et billede, som bruges til at detektere farverne på det billede, og for at finde midtpunktet og de 8 punkter omkring midt
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 ret, frame = cap.read()
 
@@ -74,9 +74,9 @@ ret, frame = cap.read()
 
 # finder midtpunktet og de 8 punkter omkring midtpunktet, som bruges til at tjekke farverne på det billede
 h, w, _ = frame.shape
-midt_x = w // 2  
-midt_y = h // 2
-afstand = 50
+midt_x = w // 2 - 60
+midt_y = h // 2 - 30
+afstand = 120
 
 top_left_x = midt_x - afstand
 top_left_y = midt_y - afstand
@@ -215,3 +215,4 @@ def Rename(x):
 
 
 print(kociemba.solve(Rename(detect_cube())))
+#align_cube()
