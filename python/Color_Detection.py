@@ -136,7 +136,7 @@ def align_cube():
             break
         
 
-def detect_cube():
+def detect_cube_loop():
     x = ""
     expected = ["Y", "O", "G", "W", "R", "B"]
     for i in range(6):
