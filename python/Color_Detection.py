@@ -172,7 +172,7 @@ def detect_cube_loop():
 
                 break
     return x
-
+    
 def detect_cube_Once(farve):
     x = ""
     while True:
