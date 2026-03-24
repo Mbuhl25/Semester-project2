@@ -24,6 +24,19 @@ ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
 //rtde_control.moveJ({0, -1.57076, 0, -1.57075, 0, 0}, 0.5, 0.3);
 
 //Base frame
-rtde_control.moveJ({0, -1.56, 0, -1.56, 0, 0}, 0.5, 0.3);
+//rtde_control.moveJ({0, -1.56, 0, -1.56, 0, 0}, 0.5, 0.3);
 
+std::string script = R"(
+def prog():
+    movej([0.0, -1.57076, 0.0, -1.57075, 0.0, 0.0])
+    movej([1.97, -0.76, 0.24, -1.06, 1.55, 0])
+    movej([1.57079633, -1.04719755, 1.83259571, -2.44346095, -1.57079633, 1.04719755])
+end
+prog()
+)";
+rtde_control.sendCustomScript(script);
+//std::this_thread::sleep_for(std::chrono::seconds(2));
 }
+
+
+
