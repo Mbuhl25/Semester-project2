@@ -129,7 +129,7 @@ def align_cube():
 
         cv2.imshow("camera", frame)
         key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):   
+        if key == ord('q'):   # tryk q når kuben er aligned
             break
         
 def align_cube_timer():
@@ -172,7 +172,7 @@ def detect_cube_loop():
 
                 break
     return x
-    
+
 def detect_cube_Once(farve):
     x = ""
     while True:
