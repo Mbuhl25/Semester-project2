@@ -126,6 +126,7 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
     if (max_count >= 3) {
         return mest;
     }
+
     return "0";
 }
 
@@ -173,7 +174,7 @@ std::string whole_cube(std::vector<cv::Point>& punkter){
                 std::cout<< "Du skal vise side: "<< expected[i]<< 
             }
 
-
+            
 
         }
     }
