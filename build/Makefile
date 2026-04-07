@@ -130,6 +130,32 @@ CVProject/fast:
 .PHONY : CVProject/fast
 
 #=============================================================================
+# Target rules for targets named ColorDetect
+
+# Build rule for target.
+ColorDetect: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ColorDetect
+.PHONY : ColorDetect
+
+# fast build rule for target.
+ColorDetect/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ColorDetect.dir/build.make CMakeFiles/ColorDetect.dir/build
+.PHONY : ColorDetect/fast
+
+#=============================================================================
+# Target rules for targets named OpenCVTest
+
+# Build rule for target.
+OpenCVTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OpenCVTest
+.PHONY : OpenCVTest
+
+# fast build rule for target.
+OpenCVTest/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OpenCVTest.dir/build.make CMakeFiles/OpenCVTest.dir/build
+.PHONY : OpenCVTest/fast
+
+#=============================================================================
 # Target rules for targets named min2phase
 
 # Build rule for target.
@@ -199,7 +225,7 @@ src/Color_Detection.o: src/Color_Detection.cpp.o
 
 # target to build an object file
 src/Color_Detection.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CVProject.dir/build.make CMakeFiles/CVProject.dir/src/Color_Detection.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ColorDetect.dir/build.make CMakeFiles/ColorDetect.dir/src/Color_Detection.cpp.o
 .PHONY : src/Color_Detection.cpp.o
 
 src/Color_Detection.i: src/Color_Detection.cpp.i
@@ -207,7 +233,7 @@ src/Color_Detection.i: src/Color_Detection.cpp.i
 
 # target to preprocess a source file
 src/Color_Detection.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CVProject.dir/build.make CMakeFiles/CVProject.dir/src/Color_Detection.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ColorDetect.dir/build.make CMakeFiles/ColorDetect.dir/src/Color_Detection.cpp.i
 .PHONY : src/Color_Detection.cpp.i
 
 src/Color_Detection.s: src/Color_Detection.cpp.s
@@ -215,7 +241,7 @@ src/Color_Detection.s: src/Color_Detection.cpp.s
 
 # target to generate assembly for a file
 src/Color_Detection.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CVProject.dir/build.make CMakeFiles/CVProject.dir/src/Color_Detection.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ColorDetect.dir/build.make CMakeFiles/ColorDetect.dir/src/Color_Detection.cpp.s
 .PHONY : src/Color_Detection.cpp.s
 
 src/CppCubeSolver.o: src/CppCubeSolver.cpp.o
@@ -242,6 +268,30 @@ src/CppCubeSolver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/CVProject.dir/build.make CMakeFiles/CVProject.dir/src/CppCubeSolver.cpp.s
 .PHONY : src/CppCubeSolver.cpp.s
 
+src/OpenCV.o: src/OpenCV.cpp.o
+.PHONY : src/OpenCV.o
+
+# target to build an object file
+src/OpenCV.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OpenCVTest.dir/build.make CMakeFiles/OpenCVTest.dir/src/OpenCV.cpp.o
+.PHONY : src/OpenCV.cpp.o
+
+src/OpenCV.i: src/OpenCV.cpp.i
+.PHONY : src/OpenCV.i
+
+# target to preprocess a source file
+src/OpenCV.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OpenCVTest.dir/build.make CMakeFiles/OpenCVTest.dir/src/OpenCV.cpp.i
+.PHONY : src/OpenCV.cpp.i
+
+src/OpenCV.s: src/OpenCV.cpp.s
+.PHONY : src/OpenCV.s
+
+# target to generate assembly for a file
+src/OpenCV.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/OpenCVTest.dir/build.make CMakeFiles/OpenCVTest.dir/src/OpenCV.cpp.s
+.PHONY : src/OpenCV.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -251,6 +301,8 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... CVProject"
+	@echo "... ColorDetect"
+	@echo "... OpenCVTest"
 	@echo "... benchmark"
 	@echo "... example"
 	@echo "... min2phase"
@@ -262,6 +314,9 @@ help:
 	@echo "... src/CppCubeSolver.o"
 	@echo "... src/CppCubeSolver.i"
 	@echo "... src/CppCubeSolver.s"
+	@echo "... src/OpenCV.o"
+	@echo "... src/OpenCV.i"
+	@echo "... src/OpenCV.s"
 .PHONY : help
 
 
