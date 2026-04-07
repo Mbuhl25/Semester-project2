@@ -3,6 +3,7 @@
 #include <opencv>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 
 std::vector<cv::Point> punkter(){
@@ -194,5 +195,35 @@ std::string whole_cube(std::vector<cv::Point>& punkter){
     }
     return string;
     
+}
+std::string rename(std::string){
+    std::string finalString;
+    std::unordered_map<char, char> convert = {
+    {'R', 'L'},
+    {'O', 'R'},
+    {'G', 'F'},
+    {'Y', 'U'},
+    {'W', 'D'}
+    };
+    for (char i : string){
+        auto it = convert.find(i);
+        if (it != convert.end()){
+            finalString += it->second;
+
+        }else {
+            finalString += i;
+        }
+    }
+    std::cout<< finalString<< std::endl;
+
+    for (const auto s : finalString){
+        counts[s]++;
+    }for (const auto [color, count] : counts){
+        std::cout<< color << " : " << count<< std::endl;
+    }
+    return finalString;
+    
+
+
 }
 
