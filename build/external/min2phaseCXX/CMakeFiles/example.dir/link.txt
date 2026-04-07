@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/example.dir/examples/example.cpp.o -o example  -Wl,-rpath,/home/frederik-crone/Desktop/Semester-project2/build/external/min2phaseCXX libmin2phase.so -lpthread 
