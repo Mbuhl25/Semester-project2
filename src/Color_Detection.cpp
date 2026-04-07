@@ -173,7 +173,7 @@ std::string whole_cube(std::vector<cv::Point>& punkter){
             align_cube(punkter());  
             std::string string = get_string(punkter());
             std::cout<< string<<std::endl;
-            if (string[4] != expected[i]){
+            if (string[4] != expected[i][0]){
                 std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
                 continue;
             }
