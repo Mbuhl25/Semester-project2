@@ -1,1 +1,0 @@
-/usr/bin/c++ "CMakeFiles/server-example.dir/examples/server-example.cpp.o" -o server-example  -Wl,-rpath,/home/frederik-crone/Desktop/Semester-project2/build/external/min2phaseCXX libmin2phase.so -lpthread 
