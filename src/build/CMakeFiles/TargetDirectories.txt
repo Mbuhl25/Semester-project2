@@ -1,0 +1,3 @@
+C:/Users/magnu/OneDrive/Skrivebord/2semester/semester projekt/Semester-project2/src/build/CMakeFiles/Program.dir
+C:/Users/magnu/OneDrive/Skrivebord/2semester/semester projekt/Semester-project2/src/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/magnu/OneDrive/Skrivebord/2semester/semester projekt/Semester-project2/src/build/CMakeFiles/ZERO_CHECK.dir

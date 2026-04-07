@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <opencv>
+#include <opencv2/opencv.hpp>
 #include <vector>
 #include <map>
 #include <unordered_map>
@@ -177,7 +177,7 @@ std::string whole_cube(std::vector<cv::Point>& punkter){
                 std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
                 continue;
             }
-            for (char i : x){
+            for (auto i : x){
                 if (i == "0"){
                     std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
                     continue;
@@ -205,7 +205,7 @@ std::string rename(std::string){
     {'Y', 'U'},
     {'W', 'D'}
     };
-    for (char i : string){
+    for (const i : string){
         auto it = convert.find(i);
         if (it != convert.end()){
             finalString += it->second;
@@ -227,3 +227,6 @@ std::string rename(std::string){
 
 }
 
+int main(){
+    std::cout<< rename(whole_cube(punkter()));
+}

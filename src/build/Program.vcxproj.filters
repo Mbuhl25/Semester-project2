@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\magnu\OneDrive\Skrivebord\2semester\semester projekt\Semester-project2\src\Color_Detection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\magnu\OneDrive\Skrivebord\2semester\semester projekt\Semester-project2\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{46E475AC-0C76-3A32-89BF-3B9DE05D2E5D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

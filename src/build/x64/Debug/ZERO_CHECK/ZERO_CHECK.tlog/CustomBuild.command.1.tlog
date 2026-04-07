@@ -1,0 +1,10 @@
+^C:\USERS\MAGNU\ONEDRIVE\SKRIVEBORD\2SEMESTER\SEMESTER PROJEKT\SEMESTER-PROJECT2\SRC\BUILD\CMAKEFILES\166E650D85F55E1468D0F2DCBDD271A3\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/magnu/OneDrive/Skrivebord/2semester/semester projekt/Semester-project2/src" "-BC:/Users/magnu/OneDrive/Skrivebord/2semester/semester projekt/Semester-project2/src/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/magnu/OneDrive/Skrivebord/2semester/semester projekt/Semester-project2/src/build/Program.slnx"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
