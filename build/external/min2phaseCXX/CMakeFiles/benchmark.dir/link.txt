@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/benchmark.dir/examples/benchmark.cpp.o -o benchmark  -Wl,-rpath,/home/frederik-crone/Desktop/Semester-project2/build/external/min2phaseCXX libmin2phase.so -lpthread 
