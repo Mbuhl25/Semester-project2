@@ -53,6 +53,8 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/CVProject.dir/DependInfo.cmake"
+  "CMakeFiles/ColorDetect.dir/DependInfo.cmake"
+  "CMakeFiles/OpenCVTest.dir/DependInfo.cmake"
   "external/min2phaseCXX/CMakeFiles/min2phase.dir/DependInfo.cmake"
   "external/min2phaseCXX/CMakeFiles/example.dir/DependInfo.cmake"
   "external/min2phaseCXX/CMakeFiles/benchmark.dir/DependInfo.cmake"

@@ -8,10 +8,10 @@
 
 std::vector<cv::Point> punkter(){
 
-    cv::Mat frame = cv::imread("image.jpg");
-
-    int h = frame.rows; 
-    int w = frame.cols;
+    cv::VideoCapture cap(0);
+    int w = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    int h = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    cap.release();
     int midt_x = w / 2;
     int midt_y = h / 2;
     int afstand = 120;
@@ -94,7 +94,7 @@ std::string check_colour(cv::Mat hsv, int x, int y){
         if (h >= lowers[i][0] && h <= uppers[i][0] &&
         s >= lowers[i][1] && s <= uppers[i][1] &&
         v >= lowers[i][2] && v <= uppers[i][2]) {
-            color + letters[i];
+            color += letters[i];
         }
     }
     return color;
@@ -132,70 +132,83 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
 }
 
 
-std::string get_string(std::vector<cv::Point>& punkter){
+// Shows live feed with alignment dots; scans and returns color string when 'q' is pressed.
+std::string align_and_scan(const std::vector<cv::Point>& punkter){
     cv::VideoCapture cap(0);
     cv::Mat frame, hsv;
-    cap >> frame;
-    
-    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-    std::string x = "";
-    for (const auto& p : punkter){
-        x += check_color_5_points(hsv, p.x, p.y);
-    }
-    return x;
-}
-
-
-void align_cube(std::vector<cv::Point>& punkter){
-    cv::VideoCapture cap(0);
-    cv::Mat frame;
     while (true) {
-        cap.read(frame);
+        cap >> frame;
+        if (frame.empty()) continue;
+        cv::Mat display = frame.clone();
         for (const auto& p : punkter){
-            cv::circle(frame, p, 3, cv::Scalar(0, 255, 0), -1);
+            cv::circle(display, p, 5, cv::Scalar(0, 255, 0), -1);
         }
-        cv::imshow("Frame", frame);
-        char key = (char)cv::waitKey(1);
-
+        cv::imshow("Align cube - press Q when ready", display);
+        char key = (char)cv::waitKey(30);
         if (key == 'q' || key == 'Q') {
-            break;
+            cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+            std::string result = "";
+            for (const auto& p : punkter){
+                result += check_color_5_points(hsv, p.x, p.y);
+            }
+            cap.release();
+            cv::destroyAllWindows();
+            return result;
+        }
     }
 }
+
+
+// Converts color-letter string (Y/O/G/W/R/B) to min2phase face notation (U/R/F/D/L/B)
+std::string convert_notation(const std::string& color_string){
+    std::map<char, char> mapping = {
+        {'Y', 'U'}, {'R', 'R'}, {'G', 'F'},
+        {'W', 'D'}, {'O', 'L'}, {'B', 'B'}
+    };
+    std::string result;
+    for (char c : color_string) {
+        auto it = mapping.find(c);
+        result += (it != mapping.end()) ? it->second : '?';
+    }
+    return result;
 }
 
-
-std::string whole_cube(std::vector<cv::Point>& punkter){
-    std::string x = "";
-    std::string string = "";
+std::string whole_cube(const std::vector<cv::Point>& punkter){
+    std::string result = "";
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
 
-    for (int i{}; i < expected.size(); i++){
+    for (int i = 0; i < (int)expected.size(); i++){
         while (true) {
-            std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
-            align_cube(punkter);  
-            std::string string = get_string(punkter);
-            std::cout<< string<<std::endl;
-            if (string[4] != expected[i][0]){
-                std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
+            std::cout << "Du skal vise side: " << expected[i] << std::endl;
+            std::string scanned = align_and_scan(punkter);
+            std::cout << scanned << std::endl;
+
+            if (scanned.size() < 9 || scanned[0] != expected[i][0]){
+                std::cout << "Forkert side, prøv igen." << std::endl;
                 continue;
             }
-            for (char i : x){
-                if (i == '0'){
-                    std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
-                    continue;
-                } else  {
-                    std::cout<< "Du har detected denne side "<< x << std::endl;
-                    string += x;
+
+            bool has_missing = false;
+            for (char c : scanned){
+                if (c == '0'){
+                    has_missing = true;
                     break;
                 }
             }
+            if (has_missing){
+                std::cout << "Den har misset en af felterne, prøv igen." << std::endl;
+                continue;
+            }
 
-            
-
+            std::cout << "Du har detected denne side: " << scanned << std::endl;
+            result += scanned;
+            break;
         }
     }
-    return string;
-    
+    return result;
+}
+int main(){
+    std::cout << convert_notation(whole_cube(punkter())) << std::endl;
 }
 std::string rename(std::string){
     std::string finalString;
