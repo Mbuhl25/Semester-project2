@@ -1,8 +1,9 @@
 #include "CV2ForCPP.hpp"
+#include <opencv2/opencv.hpp>
 #include <iostream>
 
 void CV::useCamera() {
-    cv::VideoCapture cap(1); // 0 = default camera
+    cv::VideoCapture cap(2); // 0 = default camera
 
     if (!cap.isOpened()) {
         std::cerr << "Error: Cannot open camera" << std::endl;
