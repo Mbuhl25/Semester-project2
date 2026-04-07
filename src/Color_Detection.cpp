@@ -177,7 +177,7 @@ std::string whole_cube(std::vector<cv::Point>& punkter){
                 std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
                 continue;
             }
-            for (auto i : x){
+            for (std::string i : x){
                 if (i == "0"){
                     std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
                     continue;
@@ -205,7 +205,7 @@ std::string rename(std::string){
     {'Y', 'U'},
     {'W', 'D'}
     };
-    for (const i : string){
+    for (std::string i : string){
         auto it = convert.find(i);
         if (it != convert.end()){
             finalString += it->second;
