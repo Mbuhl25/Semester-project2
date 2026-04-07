@@ -7,7 +7,7 @@
 #include <map>
 #include <unordered_map>
 
-cv::VideoCapture cap(3);
+cv::VideoCapture cap(1);
 cv::Mat frame;
 cv::Mat hsv;
 
