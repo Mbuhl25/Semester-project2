@@ -6,8 +6,13 @@
 #include <unordered_map>
 
 
-std::vector<cv::Point> punkter(int w = 640, int h = 480){
+std::vector<cv::Point> punkter(){
 
+    cv::Mat frame = cv::imread("image.jpg");
+    cap >> frame;
+
+    int h = frame.rows; 
+    int w = frame.cols;
     int midt_x = w / 2;
     int midt_y = h / 2;
     int afstand = 120;
@@ -59,12 +64,12 @@ cv::Scalar green_lower(35, 50, 50);
 cv::Scalar green_upper(85, 255, 255);
 
 // Yellow
-cv::Scalar yellow_lower(20, 100, 100);
-cv::Scalar yellow_upper(35, 255, 255);
+cv::Scalar yellow_lower(18, 80, 80);
+cv::Scalar yellow_upper(38, 255, 255);
 
 // Orange
-cv::Scalar orange_lower(5, 150, 100);
-cv::Scalar orange_upper(15, 255, 255);
+cv::Scalar orange_lower(5, 80, 80);
+cv::Scalar orange_upper(17, 255, 255);
 
 // White
 cv::Scalar white_lower(0, 0, 140);
@@ -84,14 +89,16 @@ std::string check_colour(cv::Mat hsv, int x, int y){
     int s = pixel[1];
     int v = pixel[2];
 
-    for (int i = 0; i < (int)lowers.size(); ++i) {
+    std::string color;
+
+    for (int i = 0; i < lowers.size(); ++i) {
         if (h >= lowers[i][0] && h <= uppers[i][0] &&
-            s >= lowers[i][1] && s <= uppers[i][1] &&
-            v >= lowers[i][2] && v <= uppers[i][2]) {
-            return letters[i];
+        s >= lowers[i][1] && s <= uppers[i][1] &&
+        v >= lowers[i][2] && v <= uppers[i][2]) {
+            color = letters[i];
         }
     }
-    return "0";
+    return color;
 }
 
 
@@ -126,99 +133,74 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
 }
 
 
-// Shows live feed with alignment dots; scans and returns color string when 'q' is pressed.
-std::string align_and_scan(){
+std::string get_string(std::vector<cv::Point>& punkter){
     cv::VideoCapture cap(0);
-    int w = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
-    int h = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-    std::vector<cv::Point> pts = punkter(w, h);
     cv::Mat frame, hsv;
+    cap >> frame;
+    
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+    std::string x = "";
+    for (const auto& p : punkter){
+        x += check_color_5_points(hsv, p.x, p.y);
+    }
+    return x;
+}
+
+
+void align_cube(std::vector<cv::Point>& punkter){
     while (true) {
+        cv::VideoCapture cap(0);
+        cv::Mat frame;
         cap >> frame;
-        if (frame.empty()) continue;
-        cv::Mat display = frame.clone();
-        for (const auto& p : pts){
-            cv::circle(display, p, 5, cv::Scalar(0, 255, 0), -1);
+
+
+        for (const auto& p : punkter){
+            cv::circle(frame, p, 3, cv::Scalar(0, 255, 0), -1);
         }
-        cv::imshow("Align cube - press Q when ready", display);
-        char key = (char)cv::waitKey(30);
-        if (key == 27) { // ESC to abort
-            cap.release();
-            cv::destroyAllWindows();
-            return "";
-        }
+        cv::imshow("Frame", frame);
+        char key = (char)cv::waitKey(1);
+
         if (key == 'q' || key == 'Q') {
-            cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-            std::string result = "";
-            for (const auto& p : pts){
-                result += check_color_5_points(hsv, p.x, p.y);
-            }
-            cap.release();
-            cv::destroyAllWindows();
-            return result;
-        }
+            break;
     }
+}
 }
 
 
-// Converts color-letter string (Y/O/G/W/R/B) to min2phase face notation (U/R/F/D/L/B)
-std::string convert_notation(const std::string& color_string){
-    std::map<char, char> mapping = {
-        {'Y', 'U'}, {'R', 'R'}, {'G', 'F'},
-        {'W', 'D'}, {'O', 'L'}, {'B', 'B'}
-    };
-    std::string result;
-    for (char c : color_string) {
-        auto it = mapping.find(c);
-        result += (it != mapping.end()) ? it->second : '?';
-    }
-    return result;
-}
-
-std::string whole_cube(){
-    std::string result = "";
+std::string whole_cube(std::vector<cv::Point>& punkter){
+    std::string scanned = "";
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
 
-    for (int i = 0; i < (int)expected.size(); i++){
+    for (int i{}; i < expected.size(); i++){
         while (true) {
-            std::cout << "Du skal vise side: " << expected[i] << std::endl;
-            std::string scanned = align_and_scan();
-
-            if (scanned.empty()) {
-                std::cout << "Afbrudt." << std::endl;
-                return "";
-            }
-
-            std::cout << scanned << std::endl;
-
-            if (scanned.size() < 9 || scanned[0] != expected[i][0]){
-                std::cout << "Forkert side, prøv igen. (Detected center: '" << (scanned.empty() ? '?' : scanned[0]) << "', expected: '" << expected[i][0] << "')" << std::endl;
+            std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
+            align_cube(punkter);  
+            scanned = get_string(punkter);
+            std::cout<< scanned<<std::endl;
+            if (scanned[4] != expected[i][0]){
+                std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
                 continue;
             }
-
-            bool has_missing = false;
-            for (char c : scanned){
-                if (c == '0'){
-                    has_missing = true;
-                    break;
+            for (char i : x){
+                if (i == '0'){
+                    std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
+                    continue;
                 }
             }
-            if (has_missing){
-                std::cout << "Den har misset en af felterne, prøv igen." << std::endl;
-                continue;
-            }
-
-            std::cout << "Du har detected denne side: " << scanned << std::endl;
-            result += scanned;
+            std::cout<< "Du har detected denne side"<< << scanned << std::endl;
+            string += x;
             break;
+
+            
+
+            
+
         }
     }
-    return result;
+    return scanned;
+    
 }
-int main(){
-    std::cout << convert_notation(whole_cube()) << std::endl;
-}
-std::string rename(std::string){
+std::string rename(std::string input){
     std::string finalString;
     std::unordered_map<char, char> convert = {
     {'R', 'L'},
@@ -227,7 +209,7 @@ std::string rename(std::string){
     {'Y', 'U'},
     {'W', 'D'}
     };
-    for (char i : string){
+    for (char i : input){
         auto it = convert.find(i);
         if (it != convert.end()){
             finalString += it->second;
@@ -238,6 +220,7 @@ std::string rename(std::string){
     }
     std::cout<< finalString<< std::endl;
 
+    std::map<char, int> counts;
     for (const auto s : finalString){
         counts[s]++;
     }for (const auto [color, count] : counts){
@@ -249,3 +232,6 @@ std::string rename(std::string){
 
 }
 
+int main(){
+    std::cout<< rename(whole_cube(punkter()));
+}
