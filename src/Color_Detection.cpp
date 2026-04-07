@@ -9,6 +9,7 @@
 std::vector<cv::Point> punkter(){
 
     cv::Mat frame = cv::imread("image.jpg");
+    cap >> frame;
 
     int h = frame.rows; 
     int w = frame.cols;
@@ -94,7 +95,7 @@ std::string check_colour(cv::Mat hsv, int x, int y){
         if (h >= lowers[i][0] && h <= uppers[i][0] &&
         s >= lowers[i][1] && s <= uppers[i][1] &&
         v >= lowers[i][2] && v <= uppers[i][2]) {
-            color + letters[i];
+            color = letters[i];
         }
     }
     return color;
@@ -147,8 +148,12 @@ std::string get_string(std::vector<cv::Point>& punkter){
 
 
 void align_cube(std::vector<cv::Point>& punkter){
-    while true {
-        cap.read(frame);
+    while (true) {
+        cv::VideoCapture cap(0);
+        cv::Mat frame;
+        cap >> frame;
+
+
         for (const auto& p : punkter){
             cv::circle(frame, p, 3, cv::Scalar(0, 255, 0), -1);
         }
@@ -163,40 +168,39 @@ void align_cube(std::vector<cv::Point>& punkter){
 
 
 std::string whole_cube(std::vector<cv::Point>& punkter){
-    std::string x = "";
-    std::string string = "";
+    std::string scanned = "";
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
 
     for (int i{}; i < expected.size(); i++){
-        while true {
+        while (true) {
             std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
-            align_cube(punkter());  
-            std::string string = get_string(punkter());
-            std::cout<< string<<std::endl;
-            if (string[4] != expected[i][0]){
+            align_cube(punkter);  
+            scanned = get_string(punkter);
+            std::cout<< scanned<<std::endl;
+            if (scanned[4] != expected[i][0]){
                 std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
                 continue;
             }
-            for (std::string i : x){
-                if (i == "0"){
+            for (char i : x){
+                if (i == '0'){
                     std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
                     continue;
                 }
-            } else  {
-                std::cout<< "Du har detected denne side"<< std::cout << x << std::endl;
-                string += x;
-                break;
-
             }
+            std::cout<< "Du har detected denne side"<< << scanned << std::endl;
+            string += x;
+            break;
+
+            
 
             
 
         }
     }
-    return string;
+    return scanned;
     
 }
-std::string rename(std::string){
+std::string rename(std::string input){
     std::string finalString;
     std::unordered_map<char, char> convert = {
     {'R', 'L'},
@@ -205,7 +209,7 @@ std::string rename(std::string){
     {'Y', 'U'},
     {'W', 'D'}
     };
-    for (std::string i : string){
+    for (char i : input){
         auto it = convert.find(i);
         if (it != convert.end()){
             finalString += it->second;
@@ -216,6 +220,7 @@ std::string rename(std::string){
     }
     std::cout<< finalString<< std::endl;
 
+    std::map<char, int> counts;
     for (const auto s : finalString){
         counts[s]++;
     }for (const auto [color, count] : counts){
