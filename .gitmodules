@@ -1,0 +1,6 @@
+[submodule "external/min2phaseCXX"]
+	path = external/min2phaseCXX
+	url = https://github.com/lilborgo/min2phaseCXX.git
+[submodule "external/opencv"]
+	path = external/opencv
+	url = https://github.com/opencv/opencv.git
