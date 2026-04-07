@@ -3,10 +3,48 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <map>
+#include <unordered_map>
+
+cv::VideoCapture cap(3);
+cv::Mat frame;
+cv::Mat hsv;
 
 
-std::vector<cv::Point> punkter(int w = 640, int h = 480){
+// BLUE
+cv::Scalar blue_lower   (85, 60, 60);
+cv::Scalar blue_upper   (130, 255, 255);
 
+// GREEN
+cv::Scalar green_lower  (35, 50, 50);
+cv::Scalar green_upper  (85, 255, 255);
+
+// YELLOW
+cv::Scalar yellow_lower (20, 100, 100);
+cv::Scalar yellow_upper (32, 255, 255);
+
+// ORANGE
+cv::Scalar orange_lower (5, 120, 120);
+cv::Scalar orange_upper (15, 255, 255);
+
+// WHITE (low saturation, high value)
+cv::Scalar white_lower  (0, 0, 140);
+cv::Scalar white_upper  (179, 80, 255);
+
+// RED / PINK  (split avoided by restriction)
+cv::Scalar pink_lower   (150, 90, 80);
+cv::Scalar pink_upper   (175, 255, 255);
+
+
+std::vector<cv::Scalar> lowers = {blue_lower, green_lower, yellow_lower, orange_lower, white_lower, pink_lower};
+std::vector<cv::Scalar> uppers = {blue_upper, green_upper, yellow_upper, orange_upper, white_upper, pink_upper};
+std::vector<std::string> letters = {"B", "G", "Y", "O", "W", "R"};
+
+std::vector<cv::Point> punkter(){
+
+    cap >> frame;
+
+    int h = frame.rows; 
+    int w = frame.cols;
     int midt_x = w / 2;
     int midt_y = h / 2;
     int afstand = 120;
@@ -37,45 +75,18 @@ std::vector<cv::Point> punkter(int w = 640, int h = 480){
     int bot_right_x = midt_x + afstand;
     int bot_right_y = midt_y + afstand;
 
-    points.push_back(cv::Point(midt_x, midt_y));
-    points.push_back(cv::Point(midt_left_x, midt_left_y));
     points.push_back(cv::Point(top_left_x, top_left_y));
-    points.push_back(cv::Point(bot_left_x, bot_left_y));
     points.push_back(cv::Point(top_midt_x, top_midt_y));
-    points.push_back(cv::Point(bot_midt_x, bot_midt_y));
     points.push_back(cv::Point(top_rigtht_x, top_rigtht_y));
+    points.push_back(cv::Point(midt_left_x, midt_left_y));
+    points.push_back(cv::Point(midt_x, midt_y));
     points.push_back(cv::Point(midt_right_x, midt_right_y));
+    points.push_back(cv::Point(bot_left_x, bot_left_y));
+    points.push_back(cv::Point(bot_midt_x, bot_midt_y));
     points.push_back(cv::Point(bot_right_x, bot_right_y));
 
     return points;
 }
-
-cv::Scalar blue_lower(85, 60, 60);
-cv::Scalar blue_upper(130, 255, 255);
-
-// Green
-cv::Scalar green_lower(35, 50, 50);
-cv::Scalar green_upper(85, 255, 255);
-
-// Yellow
-cv::Scalar yellow_lower(20, 100, 100);
-cv::Scalar yellow_upper(35, 255, 255);
-
-// Orange
-cv::Scalar orange_lower(5, 150, 100);
-cv::Scalar orange_upper(15, 255, 255);
-
-// White
-cv::Scalar white_lower(0, 0, 140);
-cv::Scalar white_upper(179, 80, 255);
-
-// Pink
-cv::Scalar pink_lower(135, 60, 60);
-cv::Scalar pink_upper(175, 255, 255);
-// Blue
-std::vector<cv::Scalar> lowers = {blue_lower, green_lower, yellow_lower, orange_lower, white_lower, pink_lower};
-std::vector<cv::Scalar> uppers = {blue_upper, green_upper, yellow_upper, orange_upper, white_upper, pink_upper};
-std::vector<std::string> letters = {"B", "G", "Y", "O", "W", "R"};
 
 std::string check_colour(cv::Mat hsv, int x, int y){
     cv::Vec3b pixel = hsv.at<cv::Vec3b>(y,x);
@@ -83,14 +94,19 @@ std::string check_colour(cv::Mat hsv, int x, int y){
     int s = pixel[1];
     int v = pixel[2];
 
-    for (int i = 0; i < (int)lowers.size(); ++i) {
+    std::string color;
+
+    for (int i = 0; i < lowers.size(); ++i) {
         if (h >= lowers[i][0] && h <= uppers[i][0] &&
-            s >= lowers[i][1] && s <= uppers[i][1] &&
-            v >= lowers[i][2] && v <= uppers[i][2]) {
-            return letters[i];
+        s >= lowers[i][1] && s <= uppers[i][1] &&
+        v >= lowers[i][2] && v <= uppers[i][2]) {
+            color = letters[i];
         }
     }
-    return "0";
+    if (color.empty()) {
+        return "0";
+    }
+    return color;
 }
 
 
@@ -125,95 +141,106 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
 }
 
 
-// Shows live feed with alignment dots; scans and returns color string when 'q' is pressed.
-std::string align_and_scan(){
-    cv::VideoCapture cap(0);
-    int w = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
-    int h = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-    std::vector<cv::Point> pts = punkter(w, h);
-    cv::Mat frame, hsv;
+std::string get_string(std::vector<cv::Point>& punkter){
+    cap >> frame;
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+    std::string x = "";
+    for (const auto& p : punkter){
+        x += check_colour(hsv, p.x, p.y);//check_color_5_points(hsv, p.x, p.y);
+    }
+    return x;
+}
+
+
+void align_cube(std::vector<cv::Point>& punkter){
     while (true) {
         cap >> frame;
-        if (frame.empty()) continue;
-        cv::Mat display = frame.clone();
-        for (const auto& p : pts){
-            cv::circle(display, p, 5, cv::Scalar(0, 255, 0), -1);
+
+
+        for (const auto& p : punkter){
+            cv::circle(frame, p, 3, cv::Scalar(0, 255, 0), -1);
         }
-        cv::imshow("Align cube - press Q when ready", display);
-        char key = (char)cv::waitKey(30);
-        if (key == 27) { // ESC to abort
-            cap.release();
-            cv::destroyAllWindows();
-            return "";
-        }
+        cv::imshow("Frame", frame);
+        char key = (char)cv::waitKey(1);
+
         if (key == 'q' || key == 'Q') {
-            cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-            std::string result = "";
-            for (const auto& p : pts){
-                result += check_color_5_points(hsv, p.x, p.y);
-            }
-            cap.release();
-            cv::destroyAllWindows();
-            return result;
-        }
+            break;
     }
+}
 }
 
 
-// Converts color-letter string (Y/O/G/W/R/B) to min2phase face notation (U/R/F/D/L/B)
-std::string convert_notation(const std::string& color_string){
-    std::map<char, char> mapping = {
-        {'Y', 'U'}, {'R', 'R'}, {'G', 'F'},
-        {'W', 'D'}, {'O', 'L'}, {'B', 'B'}
-    };
-    std::string result;
-    for (char c : color_string) {
-        auto it = mapping.find(c);
-        result += (it != mapping.end()) ? it->second : '?';
-    }
-    return result;
-}
-
-std::string whole_cube(){
-    std::string result = "";
+std::string whole_cube(std::vector<cv::Point> punkter){
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
-
-    for (int i = 0; i < (int)expected.size(); i++){
+    std::string fullstring = "";
+    for (int i = 0; i < expected.size(); i++){
+        std::string scanned = "";
+        bool fail = false;
         while (true) {
-            std::cout << "Du skal vise side: " << expected[i] << std::endl;
-            std::string scanned = align_and_scan();
-
-            if (scanned.empty()) {
-                std::cout << "Afbrudt." << std::endl;
-                return "";
-            }
-
+            std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
+            align_cube(punkter);  
+            scanned = get_string(punkter);
             std::cout << scanned << std::endl;
-
-            if (scanned.size() < 9 || scanned[0] != expected[i][0]){
-                std::cout << "Forkert side, prøv igen. (Detected center: '" << (scanned.empty() ? '?' : scanned[0]) << "', expected: '" << expected[i][0] << "')" << std::endl;
-                continue;
+            if (scanned[4] != expected[i][0]){
+                std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
+                fail = true;
             }
-
-            bool has_missing = false;
-            for (char c : scanned){
-                if (c == '0'){
-                    has_missing = true;
-                    break;
+            for (int i = 0; i < scanned.size(); i++){
+                std::cout << scanned[i] << std::endl;
+                if (scanned[i] == '0'){
+                    std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
+                    fail = true;
                 }
             }
-            if (has_missing){
-                std::cout << "Den har misset en af felterne, prøv igen." << std::endl;
+            if (fail) {
+                fail = false;
                 continue;
             }
-
-            std::cout << "Du har detected denne side: " << scanned << std::endl;
-            result += scanned;
+            std::cout<< "Du har detected denne side: "<< scanned << std::endl;
+            fullstring += scanned;
             break;
         }
     }
-    return result;
+    std::cout << "The cube looks like this:" << fullstring << std::endl;
+    return fullstring;
+    
 }
-int main(){
-    std::cout << convert_notation(whole_cube()) << std::endl;
+
+
+std::string rename(std::string input){
+    std::string finalString;
+    std::unordered_map<char, char> convert = {
+    {'R', 'L'},
+    {'O', 'R'},
+    {'G', 'F'},
+    {'Y', 'U'},
+    {'W', 'D'}
+    };
+    for (char i : input){
+        auto it = convert.find(i);
+        if (it != convert.end()){
+            finalString += it->second;
+
+        }else {
+            finalString += i;
+        }
+    }
+    std::cout<< finalString<< std::endl;
+
+    std::map<char, int> counts;
+    for (const auto s : finalString){
+        counts[s]++;
+    }for (const auto [color, count] : counts){
+        std::cout<< color << " : " << count<< std::endl;
+    }
+    return finalString;
+    
+
+
+}
+
+
+int main(int argc, char *argv[]){
+    std::string sixseven = rename(whole_cube(punkter()));
+    std::cout << sixseven << std::endl;
 }
