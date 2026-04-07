@@ -5,12 +5,8 @@
 #include <map>
 
 
-std::vector<cv::Point> punkter(){
+std::vector<cv::Point> punkter(int w = 640, int h = 480){
 
-    cv::VideoCapture cap(0);
-    int w = cap.get(cv::CAP_PROP_FRAME_WIDTH);
-    int h = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-    cap.release();
     int midt_x = w / 2;
     int midt_y = h / 2;
     int afstand = 120;
@@ -62,12 +58,12 @@ cv::Scalar green_lower(35, 50, 50);
 cv::Scalar green_upper(85, 255, 255);
 
 // Yellow
-cv::Scalar yellow_lower(18, 80, 80);
-cv::Scalar yellow_upper(38, 255, 255);
+cv::Scalar yellow_lower(20, 100, 100);
+cv::Scalar yellow_upper(35, 255, 255);
 
 // Orange
-cv::Scalar orange_lower(5, 80, 80);
-cv::Scalar orange_upper(17, 255, 255);
+cv::Scalar orange_lower(5, 150, 100);
+cv::Scalar orange_upper(15, 255, 255);
 
 // White
 cv::Scalar white_lower(0, 0, 140);
@@ -87,16 +83,14 @@ std::string check_colour(cv::Mat hsv, int x, int y){
     int s = pixel[1];
     int v = pixel[2];
 
-    std::string color;
-
-    for (int i = 0; i < lowers.size(); ++i) {
+    for (int i = 0; i < (int)lowers.size(); ++i) {
         if (h >= lowers[i][0] && h <= uppers[i][0] &&
-        s >= lowers[i][1] && s <= uppers[i][1] &&
-        v >= lowers[i][2] && v <= uppers[i][2]) {
-            color += letters[i];
+            s >= lowers[i][1] && s <= uppers[i][1] &&
+            v >= lowers[i][2] && v <= uppers[i][2]) {
+            return letters[i];
         }
     }
-    return color;
+    return "0";
 }
 
 
@@ -132,22 +126,30 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
 
 
 // Shows live feed with alignment dots; scans and returns color string when 'q' is pressed.
-std::string align_and_scan(const std::vector<cv::Point>& punkter){
+std::string align_and_scan(){
     cv::VideoCapture cap(0);
+    int w = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    int h = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    std::vector<cv::Point> pts = punkter(w, h);
     cv::Mat frame, hsv;
     while (true) {
         cap >> frame;
         if (frame.empty()) continue;
         cv::Mat display = frame.clone();
-        for (const auto& p : punkter){
+        for (const auto& p : pts){
             cv::circle(display, p, 5, cv::Scalar(0, 255, 0), -1);
         }
         cv::imshow("Align cube - press Q when ready", display);
         char key = (char)cv::waitKey(30);
+        if (key == 27) { // ESC to abort
+            cap.release();
+            cv::destroyAllWindows();
+            return "";
+        }
         if (key == 'q' || key == 'Q') {
             cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
             std::string result = "";
-            for (const auto& p : punkter){
+            for (const auto& p : pts){
                 result += check_color_5_points(hsv, p.x, p.y);
             }
             cap.release();
@@ -172,18 +174,24 @@ std::string convert_notation(const std::string& color_string){
     return result;
 }
 
-std::string whole_cube(const std::vector<cv::Point>& punkter){
+std::string whole_cube(){
     std::string result = "";
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
 
     for (int i = 0; i < (int)expected.size(); i++){
         while (true) {
             std::cout << "Du skal vise side: " << expected[i] << std::endl;
-            std::string scanned = align_and_scan(punkter);
+            std::string scanned = align_and_scan();
+
+            if (scanned.empty()) {
+                std::cout << "Afbrudt." << std::endl;
+                return "";
+            }
+
             std::cout << scanned << std::endl;
 
             if (scanned.size() < 9 || scanned[0] != expected[i][0]){
-                std::cout << "Forkert side, prøv igen." << std::endl;
+                std::cout << "Forkert side, prøv igen. (Detected center: '" << (scanned.empty() ? '?' : scanned[0]) << "', expected: '" << expected[i][0] << "')" << std::endl;
                 continue;
             }
 
@@ -207,5 +215,5 @@ std::string whole_cube(const std::vector<cv::Point>& punkter){
     return result;
 }
 int main(){
-    std::cout << convert_notation(whole_cube(punkter())) << std::endl;
+    std::cout << convert_notation(whole_cube()) << std::endl;
 }
