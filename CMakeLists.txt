@@ -14,7 +14,7 @@ add_executable(CVProject
 
 # Color detection executable
 add_executable(ColorDetect
-    src/Color_Detection.cpp
+    src/magnus.cpp
 )
 
 # Camera test executable
