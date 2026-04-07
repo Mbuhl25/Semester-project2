@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <opencv>
+#include <opencv2/opencv.hpp>
 #include <vector>
 #include <map>
 
@@ -146,7 +146,9 @@ std::string get_string(std::vector<cv::Point>& punkter){
 
 
 void align_cube(std::vector<cv::Point>& punkter){
-    while true {
+    cv::VideoCapture cap(0);
+    cv::Mat frame;
+    while (true) {
         cap.read(frame);
         for (const auto& p : punkter){
             cv::circle(frame, p, 3, cv::Scalar(0, 255, 0), -1);
@@ -167,25 +169,24 @@ std::string whole_cube(std::vector<cv::Point>& punkter){
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
 
     for (int i{}; i < expected.size(); i++){
-        while true {
+        while (true) {
             std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
-            align_cube(punkter());  
-            std::string string = get_string(punkter());
+            align_cube(punkter);  
+            std::string string = get_string(punkter);
             std::cout<< string<<std::endl;
-            if (string[4] != expected[i]){
+            if (string[4] != expected[i][0]){
                 std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
                 continue;
             }
             for (char i : x){
-                if (i == "0"){
+                if (i == '0'){
                     std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
                     continue;
+                } else  {
+                    std::cout<< "Du har detected denne side "<< x << std::endl;
+                    string += x;
+                    break;
                 }
-            } else  {
-                std::cout<< "Du har detected denne side"<< std::cout << x << std::endl;
-                string += x;
-                break;
-
             }
 
             
