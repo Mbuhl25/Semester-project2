@@ -7,7 +7,7 @@
 #include <map>
 #include <unordered_map>
 
-cv::VideoCapture cap(3);
+cv::VideoCapture cap(1);
 cv::Mat frame;
 cv::Mat hsv;
 
@@ -246,6 +246,10 @@ int main(int argc, char *argv[]){
 
     min2phase::init();//precomputed coordinates
 
-    std::cout << min2phase::solve(final, 21, 1000000, 0, min2phase::APPEND_LENGTH | min2phase::USE_SEPARATOR, nullptr);
+    std::string solution = min2phase::solve(final, 21, 1000000, 0, min2phase::APPEND_LENGTH | min2phase::USE_SEPARATOR, nullptr);
+
+    std::tolower(solution[0]);
+    std::cout << "Solution: " << solution << std::endl;
+
     return 0;
 }
