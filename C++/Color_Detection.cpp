@@ -78,7 +78,6 @@ cv::Scalar pink_lower(135, 60, 60);
 cv::Scalar pink_upper(175, 255, 255);
 // Blue
 std::vector<cv::Scalar> lowers = {blue_lower, green_lower, yellow_lower, orange_lower, white_lower, pink_lower};
-
 std::vector<cv::Scalar> uppers = {blue_upper, green_upper, yellow_upper, orange_upper, white_upper, pink_upper};
 std::vector<std::string> letters = {"B", "G", "Y", "O", "W", "R"};
 
@@ -114,6 +113,7 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
     std::map<std::string, int> counts;
     std::string mest;
     int max_count = 0;
+    
     for (const auto& c: colors){
         counts[c]++;
     }
@@ -158,10 +158,12 @@ void align_cube(std::vector<cv::Point>& punkter){
             break;
     }
 }
+}
 
 
 std::string whole_cube(std::vector<cv::Point>& punkter){
     std::string x = "";
+    std::string string = "";
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
 
     for (int i{}; i < expected.size(); i++){
@@ -171,13 +173,26 @@ std::string whole_cube(std::vector<cv::Point>& punkter){
             std::string string = get_string(punkter());
             std::cout<< string<<std::endl;
             if (string[4] != expected[i]){
-                std::cout<< "Du skal vise side: "<< expected[i]<< 
+                std::cout<< "Du skal vise side: "<< expected[i]<< std::endl;
+                continue;
+            }
+            for (char i : x){
+                if (i == "0"){
+                    std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
+                    continue;
+                }
+            } else  {
+                std::cout<< "Du har detected denne side"<< std::cout << x << std::endl;
+                string += x;
+                break;
+
             }
 
             
 
         }
     }
+    return string;
     
 }
 
