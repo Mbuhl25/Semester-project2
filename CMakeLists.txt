@@ -11,9 +11,13 @@ find_package(OpenCV REQUIRED)
 add_executable(CVProject
     src/Color_Detection.cpp
     src/Test_main.cpp
+    src/Algorithm.cpp
+    src/main.cpp
 )
 
 # Include directories
 add_subdirectory(external/min2phaseCXX)
 target_include_directories(CVProject PRIVATE ${CMAKE_SOURCE_DIR}/external/min2phaseCXX/include)
 target_link_libraries(CVProject PRIVATE ${OpenCV_LIBS} min2phase)
+
+target_include_directories(CVProject PUBLIC include)
