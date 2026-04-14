@@ -9,7 +9,8 @@ find_package(OpenCV REQUIRED)
 
 # Main executable
 add_executable(CVProject
-    src/CppCubeSolver.cpp
+    src/Color_Detection.cpp
+    src/Test_main.cpp
 )
 
 # Include directories
