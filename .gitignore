@@ -1,1 +1,5 @@
+external/opencv/
 build/
+*.exe
+*.o
+*.obj
