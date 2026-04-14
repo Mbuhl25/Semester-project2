@@ -1,3 +1,0 @@
-/home/frederik-crone/Desktop/Semester-project2/C++/FinishedSetup/build/CMakeFiles/CVProject.dir
-/home/frederik-crone/Desktop/Semester-project2/C++/FinishedSetup/build/CMakeFiles/edit_cache.dir
-/home/frederik-crone/Desktop/Semester-project2/C++/FinishedSetup/build/CMakeFiles/rebuild_cache.dir
