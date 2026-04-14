@@ -1,22 +1,17 @@
+#include "Color_Detection.h"
 #include <iostream>
 #include <string>
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <map>
 #include <unordered_map>
-
-cv::VideoCapture cap(3);
-cv::Mat frame;
-cv::Mat hsv;
-
-
 // BLUE
-cv::Scalar blue_lower   (85, 60, 60);
-cv::Scalar blue_upper   (130, 255, 255);
+cv::Scalar blue_lower  (85, 60, 60);
+cv::Scalar blue_upper  (130, 255, 255);
 
 // GREEN
-cv::Scalar green_lower  (35, 50, 50);
-cv::Scalar green_upper  (85, 255, 255);
+cv::Scalar green_lower (35, 50, 50);
+cv::Scalar green_upper (85, 255, 255);
 
 // YELLOW
 cv::Scalar yellow_lower (20, 100, 100);
@@ -27,19 +22,19 @@ cv::Scalar orange_lower (5, 120, 120);
 cv::Scalar orange_upper (15, 255, 255);
 
 // WHITE (low saturation, high value)
-cv::Scalar white_lower  (0, 0, 140);
-cv::Scalar white_upper  (179, 80, 255);
+cv::Scalar white_lower (0, 0, 140);
+cv::Scalar white_upper (179, 80, 255);
 
 // RED / PINK  (split avoided by restriction)
-cv::Scalar pink_lower   (150, 90, 80);
-cv::Scalar pink_upper   (175, 255, 255);
+cv::Scalar pink_lower (150, 90, 80);
+cv::Scalar pink_upper (175, 255, 255);
 
 
-std::vector<cv::Scalar> lowers = {blue_lower, green_lower, yellow_lower, orange_lower, white_lower, pink_lower};
-std::vector<cv::Scalar> uppers = {blue_upper, green_upper, yellow_upper, orange_upper, white_upper, pink_upper};
-std::vector<std::string> letters = {"B", "G", "Y", "O", "W", "R"};
+lowers = {blue_lower, green_lower, yellow_lower, orange_lower, white_lower, pink_lower};
+uppers = {blue_upper, green_upper, yellow_upper, orange_upper, white_upper, pink_upper};
+letters = {"B", "G", "Y", "O", "W", "R"};
 
-std::vector<cv::Point> punkter(){
+std::vector<cv::Point> Color_Detection::punkter(){
 
     cap >> frame;
 
@@ -88,7 +83,7 @@ std::vector<cv::Point> punkter(){
     return points;
 }
 
-std::string check_colour(cv::Mat hsv, int x, int y){
+std::string Color_Detection::check_colour(cv::Mat hsv, int x, int y){
     cv::Vec3b pixel = hsv.at<cv::Vec3b>(y,x);
     int h = pixel[0];
     int s = pixel[1];
@@ -111,7 +106,7 @@ std::string check_colour(cv::Mat hsv, int x, int y){
 
 
 
-std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
+std::string Color_Detection::check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
 
     std::vector<std::string> colors = {
         check_colour(hsv, x, y),  //midten
@@ -124,9 +119,8 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
     std::string mest;
     int max_count = 0;
     
-    for (const auto& c: colors){
-        counts[c]++;
-    }
+    for (const auto& c : colors){
+        counts[c]++; // Går igennem colors og genner det i maps counts (lavet ovenover) som genner string, og tælelr hvor mange gange den kommer    }
     for (const auto& [color, count] : counts){
         if (count > max_count){
             max_count = count;
@@ -141,7 +135,7 @@ std::string check_color_5_points(cv::Mat hsv, int x, int y, int offset = 5){
 }
 
 
-std::string get_string(std::vector<cv::Point>& punkter){
+std::string Color_Detection::get_string(std::vector<cv::Point>& punkter){
     cap >> frame;
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     std::string x = "";
@@ -152,7 +146,7 @@ std::string get_string(std::vector<cv::Point>& punkter){
 }
 
 
-void align_cube(std::vector<cv::Point>& punkter){
+void Color_Detection::align_cube(std::vector<cv::Point>& punkter){
     while (true) {
         cap >> frame;
 
@@ -170,7 +164,7 @@ void align_cube(std::vector<cv::Point>& punkter){
 }
 
 
-std::string whole_cube(std::vector<cv::Point> punkter){
+std::string Color_Detection::whole_cube(std::vector<cv::Point> punkter){
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
     std::string fullstring = "";
     for (int i = 0; i < expected.size(); i++){
@@ -207,7 +201,7 @@ std::string whole_cube(std::vector<cv::Point> punkter){
 }
 
 
-std::string rename(std::string input){
+std::string Color_Detection::rename(std::string input){
     std::string finalString;
     std::unordered_map<char, char> convert = {
     {'R', 'L'},
@@ -217,11 +211,11 @@ std::string rename(std::string input){
     {'W', 'D'}
     };
     for (char i : input){
-        auto it = convert.find(i);
-        if (it != convert.end()){
+        auto it = convert.find(i)
+        if (it != convert.end()){ // hvis it ikke rammer conver.end hvilket betyder at den har ramt noget i convert, skal den tilføje den converterede string til finalstring
             finalString += it->second;
 
-        }else {
+        }else { // hvis i ( en string fra input) ikke findes i convert skal den tilføje i til finalstring
             finalString += i;
         }
     }
@@ -266,6 +260,43 @@ std::string rename(std::string){
     return finalString;
     
 
+std::string Color_Detection::one_side(std::vector<cv::Point> punkter, std::string color){
+std::string fullstring = "";
+    std::string scanned = "";
+    bool fail = false;
+    while (true) {
+        std::cout<< "Du skal vise side: "<< color << std::endl;
+        align_cube(punkter);  
+        scanned = get_string(punkter);
+        std::cout << scanned << std::endl;
+        if (scanned[4] != color[0]){
+            std::cout<< "Du skal vise side: "<< color << std::endl;
+            fail = true;
+        }
+        for (int i = 0; i < scanned.size(); i++){
+            std::cout << scanned[i] << std::endl;
+            if (scanned[i] == '0'){
+                std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
+                fail = true;
+            }
+        }
+        if (fail) {
+            fail = false;
+            continue;
+        }
+        std::cout<< "Du har detected denne side: "<< scanned << std::endl;
+        fullstring += scanned;
+        break;
+    }
+    
+    return fullstring;
+}
+
+ void Color_Detection::cube(){
+    std::cout<< rename(whole_cube(punkter()))<< std::endl;
 
 }
 
+void Color_Detection::side(std::string color){
+    std::cout<< rename(one_side(punkter(), color))<< std::endl;
+}
