@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(OpenCV REQUIRED)
 
 add_executable(Program ../src/Color_Detection.cpp)
+add_executable(Program ../src/Test_main.cpp)
 
 target_include_directories(Program PRIVATE ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(Program PRIVATE ${OpenCV_LIBS})
