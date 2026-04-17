@@ -10,7 +10,6 @@ find_package(OpenCV REQUIRED)
 # Main executable
 add_executable(CVProject
     src/Color_Detection.cpp
-    src/Test_main.cpp
     src/Algorithm.cpp
     src/main.cpp
 )
