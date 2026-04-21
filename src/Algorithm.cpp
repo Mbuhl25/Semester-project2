@@ -29,6 +29,20 @@ void Algorithm::rotateDPrime() {
     ring[3] = temp;
 }
 
+void Algorithm::rotate2D() {
+    int temp = ring[0];
+    for (int i = 0; i < 3; i++)
+        ring[i] = ring[i - 2];
+    ring[3] = temp;
+}
+
+void Algorithm::rotate2DPrime() {
+    int temp = ring[0];
+    for (int i = 0; i < 3; i++)
+        ring[i] = ring[i + 2];
+    ring[3] = temp;
+}
+
 //Flot move resolver
 char Algorithm::resolve(char face) {
     static const char faces[] = {'L','F','R','B'};
@@ -75,6 +89,18 @@ std::string Algorithm::switchpoints() {
         if (m == "D'") {
             rotateDPrime();
             result += "D' ";
+            continue;
+        }
+
+        if (m == "2D") {
+            rotate2D();
+            result += "2D ";
+            continue;
+        }
+
+        if (m == "2D'") {
+            rotate2DPrime();
+            result += "2D' ";
             continue;
         }
 
