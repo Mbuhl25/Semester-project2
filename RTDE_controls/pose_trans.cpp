@@ -6,7 +6,47 @@
 #include <Eigen/Dense>
 
 
-// Creates 3x3 Rotation matrix, input is data type -> Eigen::Vector3d with the rx ry rz values of the feature_pose
+// Helper functions(makes sure that we can use the name of the poses)
+ur_rtde::PathEntry makeMoveL_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+{
+    return ur_rtde::PathEntry{
+        ur_rtde::PathEntry::MoveL,
+        ur_rtde::PathEntry::PositionTcpPose,
+        {
+            pose[0], pose[1], pose[2],
+            pose[3], pose[4], pose[5],
+            speed, acceleration, blend
+        }
+    };
+}
+
+ur_rtde::PathEntry makeMoveJ_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+{
+    return ur_rtde::PathEntry{
+        ur_rtde::PathEntry::MoveJ,
+        ur_rtde::PathEntry::PositionTcpPose,
+        {
+            pose[0], pose[1], pose[2],
+            pose[3], pose[4], pose[5],
+            speed, acceleration, blend
+        }
+    };
+}
+
+ur_rtde::PathEntry makeMoveJ_Q(const std::vector<double>& pose, double speed, double acceleration, double blend)
+{
+    return ur_rtde::PathEntry{
+        ur_rtde::PathEntry::MoveJ,
+        ur_rtde::PathEntry::PositionJoints,
+        {
+            pose[0], pose[1], pose[2],
+            pose[3], pose[4], pose[5],
+            speed, acceleration, blend
+        }
+    };
+}
+
+// Creates 3x3 Rotation matrix, the input is the data type -> Eigen::Vector3d with the rx ry rz values of the feature_pose
 Eigen::Matrix3d rodrigues(const Eigen::Vector3d& r)
 {
     double theta = r.norm();
@@ -26,7 +66,6 @@ Eigen::Matrix3d rodrigues(const Eigen::Vector3d& r)
          + (1 - std::cos(theta)) * (u * u.transpose())
          + K * std::sin(theta);
 }
-
 
 // Creates the 4x4 Transformation matrix
 Eigen::Matrix4d poseToMatrix(const std::vector<double>& p)
@@ -84,8 +123,7 @@ std::vector<double> matrixToPose(const Eigen::Matrix4d& T)
 
 
 // The finished pose_trans function where the inputs are the reference frame(a) and the offeset pose(b)(the transform relative to a)
-std::vector<double> pose_trans(const std::vector<double>& a,
-                               const std::vector<double>& b)
+std::vector<double> pose_trans(const std::vector<double>& a, const std::vector<double>& b)
 {
     Eigen::Matrix4d T1 = poseToMatrix(a);
     Eigen::Matrix4d T2 = poseToMatrix(b);
@@ -96,8 +134,66 @@ std::vector<double> pose_trans(const std::vector<double>& a,
 }
 
 
+void move_to_work_start(){
+    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
+    rtde_control.moveJ({1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045}, 0.5, 0.3);
+}
 
+
+//also works now
 int main() {
+    // Control robot
+    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
+    
+    // The robot has a 30 degree offset
+    std::vector<double> base_correction = {0, 0, 0, 0, 0, 0.5236};
+    std::vector<double> xyz_frame = {0.238521, -0.299265, 0.20658744, -1.74705, -2.58713, -0.0208294};
+    std::vector<double> corrected_xyz_frame = pose_trans(xyz_frame, base_correction);
+    std::vector<double> work_start = {1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045};
+    std::vector<double> cube_approach_point = {0.000942241, -0.38335, 0.15344488, -1.74705, -2.58713, -0.0208294};
+
+    std::vector<double> tape_frame = pose_trans(cube_approach_point, corrected_xyz_frame);
+
+    std::vector<double> move_down_10_cm = {0, 0, 0.1, 0, 0, 0};
+
+    std::vector<double> grip_point = pose_trans(cube_approach_point, move_down_10_cm);
+    std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, 1.57};
+    std::vector<double> ninety_deg_x = {0, 0, -0.4, 1.57, 0, 0};
+    
+
+    std::vector<double> turn_cube = pose_trans(grip_point, ninety_deg_z);
+    std::vector<double> mount_gripper = pose_trans(grip_point, ninety_deg_x);
+
+    
+    //rtde_control.moveL(xyz_frame, 0.5, 0.3);
+    //rtde_control.moveL(cube_approach_point, 0.5, 0.3);
+    //rtde_control.moveL(grip_point, 0.3, 0.3);
+
+    ur_rtde::Path path;
+
+    double speed = 0.5;
+    double acceleration = 0.3;
+    double blend = 0.05;
+
+    path.addEntry(makeMoveL_TCP(xyz_frame, speed, acceleration, blend));
+    path.addEntry(makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
+    path.addEntry(makeMoveL_TCP(grip_point, speed, acceleration, 0));
+
+    ur_rtde::Path path2;
+
+    path2.addEntry(makeMoveL_TCP(turn_cube, speed, acceleration, blend));
+    path2.addEntry(makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
+    path2.addEntry(makeMoveL_TCP(mount_gripper,speed, acceleration, 0));
+
+
+    rtde_control.movePath(path, false);
+    rtde_control.movePath(path2, false);
+    
+
+}
+
+
+void this_works(){
     // Control robot
     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
     
@@ -107,10 +203,11 @@ int main() {
     std::vector<double> corrected_ref_frame = pose_trans(ref_frame, base_correction);
 
 
-    std::vector<double> move_forward_20_cm = {-0, 0, 0, 0, 0, 0};
+    std::vector<double> move_forward_20_cm = {-0.2, 0, 0, 0, 0, 0};
 
     std::vector<double> rubiks_cube = pose_trans(corrected_ref_frame, move_forward_20_cm);
+    std::vector<double> start = pose_trans(corrected_ref_frame, {0,0,0,0,0,0});
 
+    rtde_control.moveL(start, 0.5, 0.3);
     rtde_control.moveL(rubiks_cube, 0.5 , 0.3);
-
 }
