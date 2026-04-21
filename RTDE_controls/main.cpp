@@ -15,6 +15,6 @@ for (double q : joint_positions) {
 
 // move robot to position
 ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-rtde_control.moveL({0.540398, -1.07038, -0.0211795, 5.34891, 0.00659544, -0.650891}, 0.5, 0.2);
+rtde_control.moveJ({0.540398, -1.07038, -0.0211795, 5.34891, 0.00659544, -0.650891}, 0.5, 0.2);
 
 }
