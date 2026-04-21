@@ -1,4 +1,3 @@
-#include "Color_Detection.h"
 #include <iostream>
 #include <string>
 #include <opencv2/opencv.hpp>
@@ -6,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <stdexcept>
+#include "Color_Detection.h"
 
 Color_Detection::Color_Detection() {}
 
@@ -54,23 +54,23 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
 
     if (cubeType == "Lucas") {
         // YELLOW
-        yellow_lower = cv::Scalar(20, 100, 100);
-        yellow_upper = cv::Scalar(32, 255, 255);
+        yellow_lower = cv::Scalar(24, 106, 100);
+        yellow_upper = cv::Scalar(43, 181, 255);
         // ORANGE
-        orange_lower = cv::Scalar(5, 120, 120);
-        orange_upper = cv::Scalar(15, 255, 255);
+        orange_lower = cv::Scalar(7, 195, 100);
+        orange_upper = cv::Scalar(22, 239, 255);
         // GREEN
-        green_lower = cv::Scalar(35, 50, 50);
-        green_upper = cv::Scalar(85, 255, 255);
+        green_lower = cv::Scalar(41, 147, 100);
+        green_upper = cv::Scalar(56, 214, 255);
         // WHITE
-        white_lower = cv::Scalar(0, 0, 140);
-        white_upper = cv::Scalar(179, 80, 255);
+        white_lower = cv::Scalar(101, 64, 100);
+        white_upper = cv::Scalar(124, 113, 255);
         // RED / PINK
-        red_lower = cv::Scalar(150, 90, 80);
-        red_upper = cv::Scalar(175, 255, 255);
+        red_lower = cv::Scalar(145, 113, 100);
+        red_upper = cv::Scalar(166, 163, 255);
         // BLUE
-        blue_lower = cv::Scalar(85, 60, 60);
-        blue_upper = cv::Scalar(130, 255, 255);
+        blue_lower = cv::Scalar(99, 168, 100);
+        blue_upper = cv::Scalar(114, 212, 255);
     } else if (cubeType == "Mathi") {
         // YELLOW
         yellow_lower = cv::Scalar(22, 100, 120);
@@ -90,6 +90,30 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
         // BLUE
         blue_lower = cv::Scalar(90,  60,  80);
         blue_upper = cv::Scalar(120, 255, 255);
+    } else if (cubeType == "Gammel") {
+        // YELLOW
+        yellow_lower = cv::Scalar(30, 120, 190);
+        yellow_upper = cv::Scalar(40, 255, 255);
+
+        // ORANGE
+        orange_lower = cv::Scalar(5, 150, 200);
+        orange_upper = cv::Scalar(15, 255, 255);
+
+        // GREEN
+        green_lower = cv::Scalar(60, 120, 140);
+        green_upper = cv::Scalar(75, 255, 200);
+
+        // WHITE
+        white_lower = cv::Scalar(0, 0, 190);
+        white_upper = cv::Scalar(179, 30, 255);
+
+        // RED
+        red_lower = cv::Scalar(0, 150, 90);
+        red_upper = cv::Scalar(4, 255, 180);
+
+        // BLUE
+        blue_lower = cv::Scalar(95, 180, 130);
+        blue_upper = cv::Scalar(110, 255, 200);
     } else {
         throw std::invalid_argument("Unknown Cubetype. Pls insert which cube you are using");
     }
@@ -177,7 +201,10 @@ void Color_Detection::align_cube(){
         char key = (char)cv::waitKey(1);
         if (key == 'q' || key == 'Q') {
             break;
-    }
+        }
+        if (key == 'p'){   
+            print_hsv_values();
+        }
 }
 }
 
@@ -285,4 +312,19 @@ void Color_Detection::print_cube(){
 
 void Color_Detection::print_side(std::string color){
     std::cout<< rename_colors_to_orientations(scan_one_side(color))<< std::endl;
+}
+
+void Color_Detection::print_hsv_values(){
+    cap >> frame;
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+    for(int i = 0; i < points.size(); i++){
+        cv::Vec3b pixel = hsv.at<cv::Vec3b>(points[i].y,points[i].x);
+
+        int h = pixel[0];
+        int s = pixel[1];
+        int v = pixel[2];    
+
+        // std::cout << "point : " << i+1 << std::endl;
+        std::cout << h << ", " << s << ", " << v << ";" << std::endl;
+    }
 }
