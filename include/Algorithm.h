@@ -19,6 +19,8 @@ private:
 
     void rotateD();
     void rotateDPrime();
+    void rotate2D();
+    void rotate2DPrime();
 
     char resolve(char face);
 };

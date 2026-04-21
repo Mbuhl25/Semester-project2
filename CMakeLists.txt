@@ -11,8 +11,9 @@ find_package(OpenCV REQUIRED)
 add_executable(CVProject
     src/Color_Detection.cpp
     src/Algorithm.cpp
-    src/main.cpp
+    src/main.cpp 
 )
+#Ændre main.cpp til Test_main.cpp hvis i vil kører test side y
 
 # Include directories
 add_subdirectory(external/min2phaseCXX)
