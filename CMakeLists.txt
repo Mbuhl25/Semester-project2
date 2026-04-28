@@ -12,7 +12,7 @@ add_executable(CVProject
     src/Color_Detection.cpp
     src/Algorithm.cpp
     src/GripperConection.cpp
-    src/maintest.cpp 
+    src/main.cpp 
 )
 #Ændre main.cpp til Test_main.cpp hvis i vil kører test side y
 
