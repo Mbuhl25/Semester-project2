@@ -20,8 +20,11 @@ public:
     void align_cube();
     std::string rename_colors_to_orientations(std::string input);
 
+    void print_hsv_values();
     void print_cube();
     void print_side(std::string color);
+
+
     
 private:
     cv::Mat frame;
