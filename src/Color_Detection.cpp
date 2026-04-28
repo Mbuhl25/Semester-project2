@@ -54,23 +54,23 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
 
     if (cubeType == "Lucas") {
         // YELLOW
-        yellow_lower = cv::Scalar(24, 106, 100);
-        yellow_upper = cv::Scalar(43, 181, 255);
+        yellow_lower = cv::Scalar(22, 193, 100);
+        yellow_upper = cv::Scalar(37, 246, 255);
         // ORANGE
-        orange_lower = cv::Scalar(7, 195, 100);
-        orange_upper = cv::Scalar(22, 239, 255);
+        orange_lower = cv::Scalar(6, 223, 100);
+        orange_upper = cv::Scalar(21, 255, 255);
         // GREEN
-        green_lower = cv::Scalar(41, 147, 100);
-        green_upper = cv::Scalar(56, 214, 255);
+        green_lower = cv::Scalar(36, 186, 100);
+        green_upper = cv::Scalar(51, 237, 255);
         // WHITE
-        white_lower = cv::Scalar(101, 64, 100);
-        white_upper = cv::Scalar(124, 113, 255);
+        white_lower = cv::Scalar(29, 5, 100);
+        white_upper = cv::Scalar(89, 41, 255);
         // RED / PINK
-        red_lower = cv::Scalar(145, 113, 100);
-        red_upper = cv::Scalar(166, 163, 255);
+        red_lower = cv::Scalar(167, 138, 100);
+        red_upper = cv::Scalar(184, 163, 255);
         // BLUE
-        blue_lower = cv::Scalar(99, 168, 100);
-        blue_upper = cv::Scalar(114, 212, 255);
+        blue_lower = cv::Scalar(93, 139, 100);
+        blue_upper = cv::Scalar(109, 174, 255);
     } else if (cubeType == "Mathi") {
         // YELLOW
         yellow_lower = cv::Scalar(22, 100, 120);
@@ -147,13 +147,21 @@ std::string Color_Detection::get_color(cv::Mat hsv, int x, int y){
 
 
 
-std::string Color_Detection::get_color_from_5_points(cv::Mat hsv, int x, int y, int offset = 5) {
+std::string Color_Detection::get_color_from_5_points(cv::Mat hsv, int x, int y, int offset = 3) {
     std::vector<std::string> colors = {
         get_color(hsv, x, y),  //midten
         get_color(hsv, x - offset, y), // venstre
         get_color(hsv, x + offset, y), // højre
         get_color(hsv, x, y - offset), // op
         get_color(hsv, x, y + offset) // ned
+    };
+    cv::Vec3b pixel_1 = hsv.at<cv::Vec3b>(y, x);
+    cv::Vec3b pixel_2 = hsv.at<cv::Vec3b>(y, x - offset);
+    cv::Vec3b pixel_3 = hsv.at<cv::Vec3b>(y, x + offset);
+    cv::Vec3b pixel_4 = hsv.at<cv::Vec3b>(y - offset, x);
+    cv::Vec3b pixel_5 = hsv.at<cv::Vec3b>(y + offset, x);
+    std::vector<std::string> hsv_values = {
+        
     };
     std::map<std::string, int> counts;
     std::string mest;
@@ -200,6 +208,7 @@ void Color_Detection::align_cube(){
 
         char key = (char)cv::waitKey(1);
         if (key == 'q' || key == 'Q') {
+            print_hsv_values();
             break;
         }
         if (key == 'p'){   
@@ -317,6 +326,7 @@ void Color_Detection::print_side(std::string color){
 void Color_Detection::print_hsv_values(){
     cap >> frame;
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+
     for(int i = 0; i < points.size(); i++){
         cv::Vec3b pixel = hsv.at<cv::Vec3b>(points[i].y,points[i].x);
 
@@ -325,6 +335,6 @@ void Color_Detection::print_hsv_values(){
         int v = pixel[2];    
 
         // std::cout << "point : " << i+1 << std::endl;
-        std::cout << h << ", " << s << ", " << v << ";" << std::endl;
+        std::cout << h << ", " << s << ", " << v << std::endl;
     }
 }
