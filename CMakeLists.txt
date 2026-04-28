@@ -18,6 +18,7 @@ add_executable(CVProject
     src/GripperConection.cpp
     src/main.cpp 
     src/pose_trans.cpp
+    src/call_positions.cpp
 )
 #Ændre main.cpp til Test_main.cpp hvis i vil kører test side y
 
