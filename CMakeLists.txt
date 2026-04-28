@@ -12,12 +12,13 @@ find_package(ur_rtde REQUIRED)
 
 # Main executable
 add_executable(CVProject
-    src/Color_Detection.cpp
-    src/Algorithm.cpp
-    src/FromVectorToRobot.cpp
+    ##src/Color_Detection.cpp
+    ##src/Algorithm.cpp
+    ##src/FromVectorToRobot.cpp
     src/GripperConection.cpp
-    src/main.cpp 
-    src/call_positions.cpp
+    ##src/main.cpp 
+    ##src/call_position.cpp
+    src/maintest.cpp
 )
 #Ændre main.cpp til Test_main.cpp hvis i vil kører test side y
 
