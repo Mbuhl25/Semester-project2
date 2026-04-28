@@ -30,8 +30,8 @@ int main()
     // -----------------------------
     ur_rtde::Path path;
 
-    double speed = 0.25;        // m/s
-    double acceleration = 0.5;  // m/s^2
+    double speed = 0.1;        // m/s
+    double acceleration = 0.1;  // m/s^2
     double blend = 0.05;        // meters
 
     // Rectangle in XY plane
@@ -56,7 +56,7 @@ int main()
     path.addEntry({
         PathEntry::MoveL,
         PathEntry::PositionTcpPose,
-        { -0.6, -0.3, 0.1, 0.0, -1.57, 0.0, speed, acceleration, 0.0 } // last blend MUST be 0
+        { -0.6, -0.3, 0.1, 0.0, -1.57, 0.0, speed, acceleration, 0 } // last blend MUST be 0
     });
 
     // -----------------------------
