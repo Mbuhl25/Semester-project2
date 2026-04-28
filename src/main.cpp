@@ -4,6 +4,7 @@
 #include <sstream>
 #include "Algorithm.h"
 #include "Color_Detection.h"
+#include "FromVectorToRobot.h"
 
 #include <min2phase/min2phase.h>
 #include <min2phase/tools.h>
@@ -11,6 +12,7 @@
 int main() {
     Color_Detection cube_mathi("Lucas", 3);
     Algorithm alg;
+    FromVectorToRobot robot;
     min2phase::init(); //precomputed coordinates
 
     //cube_mathi.align_cube();
@@ -20,6 +22,9 @@ int main() {
     alg.moves = alg.FromStringToVec(input);
 
     std::string output = alg.switchpoints();
+    
     std::cout << input << std::endl;
     std::cout << output << std::endl;
+
+    robot.VecMove(alg.moves);
 }
