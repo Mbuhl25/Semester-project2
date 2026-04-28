@@ -141,7 +141,7 @@ void move_to_work_start(){
 
 
 //also works now
-int main() {
+void ain() {
     // Control robot
     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
     
@@ -152,27 +152,6 @@ int main() {
     std::vector<double> work_start = {1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045};
     std::vector<double> cube_approach_point = {0.000942241, -0.38335, 0.15344488, -1.74705, -2.58713, -0.0208294};
 
-    std::vector<double> tape_frame = pose_trans(cube_approach_point, corrected_xyz_frame);
-    std::vector<double> move_down_10_cm = {-0.015, -0.02, 0.113, 0, 0, 0.785};
-
-    std::vector<double> grip_point = pose_trans(cube_approach_point, move_down_10_cm);
-    std::vector<double> fortyfive_deg_z = {0, 0, 0, 0, 0, 0.785};
-    std::vector<double> ninety_deg_z = {-0.005, -0.005, 0, 0, 0, 2.2};
-    std::vector<double> ninety_deg_x = {0, 0, -0.4, 1.57, 0, 0};
-    std::vector<double> cube_approach_45 = pose_trans(cube_approach_point, fortyfive_deg_z);
-    std::vector<double> up = {0, 0, -0.30, 0, 0, 0};
-    
-
-    std::vector<double> turn_cube = pose_trans(grip_point, fortyfive_deg_z);
-    std::vector<double> mount_gripper = pose_trans(grip_point, ninety_deg_x);
-    std::vector<double> cube_90_deg = pose_trans(grip_point, ninety_deg_z);
-    std::vector<double> go_up = pose_trans(grip_point, up);
-
-    
-    //rtde_control.moveL(xyz_frame, 0.5, 0.3);
-    //rtde_control.moveL(cube_approach_point, 0.5, 0.3);
-    //rtde_control.moveL(grip_point, 0.3, 0.3);
-
     ur_rtde::Path path;
 
     double speed = 0.2;
@@ -181,41 +160,9 @@ int main() {
 
     path.addEntry(makeMoveL_TCP(xyz_frame, speed, acceleration, blend));
     path.addEntry(makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
-    path.addEntry(makeMoveL_TCP(cube_approach_45, acceleration, speed, blend));
-    path.addEntry(makeMoveL_TCP(grip_point, speed, acceleration, 0));
-    path.addEntry(makeMoveL_TCP(cube_90_deg, speed, acceleration, 0));
-    path.addEntry(makeMoveL_TCP(go_up, speed, acceleration, 0));
 
-    //ur_rtde::Path path2;
-
-    //path2.addEntry(makeMoveL_TCP(turn_cube, speed, acceleration, blend));
-    //path2.addEntry(makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
-
-    //rtde_control.moveJ({1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045}, 0.5, 0.3);
-    //rtde_control.movePath(path, false);
-    //rtde_control.movePath(path2, false);
     rtde_control.moveL(xyz_frame, speed, acceleration);
 
     
 
-}
-
-
-void this_works(){
-    // Control robot
-    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-    
-    // The robot has a 30 degree offset
-    std::vector<double> base_correction = {0, 0, 0, 0, 0, 0.5236};
-    std::vector<double> ref_frame = {0.151702, -0.319567, 0.136781, -1.10679, -2.88093, 0.0202264};
-    std::vector<double> corrected_ref_frame = pose_trans(ref_frame, base_correction);
-
-
-    std::vector<double> move_forward_20_cm = {-0.2, 0, 0, 0, 0, 0};
-
-    std::vector<double> rubiks_cube = pose_trans(corrected_ref_frame, move_forward_20_cm);
-    std::vector<double> start = pose_trans(corrected_ref_frame, {0,0,0,0,0,0});
-
-    rtde_control.moveL(start, 0.5, 0.3);
-    rtde_control.moveL(rubiks_cube, 0.5 , 0.3);
 }
