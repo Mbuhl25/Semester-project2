@@ -17,8 +17,7 @@ private:
 
     void rotateD();
     void rotateDPrime();
-    void rotateD2();
-
+    
     char resolve(char face);
 };
 
