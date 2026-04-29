@@ -1,10 +1,4 @@
 #include <iostream>
-#include <string>
-#include <opencv2/opencv.hpp>
-#include <vector>
-#include <map>
-#include <unordered_map>
-#include <stdexcept>
 #include "Color_Detection.h"
 
 Color_Detection::Color_Detection() {} // constructor to make the object

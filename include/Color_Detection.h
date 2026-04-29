@@ -1,11 +1,8 @@
 #ifndef COLOR_DETECTION_H
 #define COLOR_DETECTION_H
-#include <iostream>
 #include <string>
-#include <opencv2/opencv.hpp>
 #include <vector>
-#include <map>
-#include <unordered_map>
+#include <opencv2/opencv.hpp>
 
 class Color_Detection {
 public:
@@ -28,7 +25,7 @@ private:
     cv::Mat hsv;
     cv::VideoCapture cap;
     std::vector<cv::Point> points;
-    
+
     std::vector<std::string> letters = {"B", "G", "Y", "O", "W", "R"};
 
     // Blue
