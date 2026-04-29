@@ -29,17 +29,10 @@ void Algorithm::rotateDPrime() {
     ring[3] = temp;
 }
 
-void Algorithm::rotate2D() {
+void Algorithm::rotateD2() {
     int temp = ring[0];
     for (int i = 0; i < 3; i++)
         ring[i] = ring[i - 2];
-    ring[3] = temp;
-}
-
-void Algorithm::rotate2DPrime() {
-    int temp = ring[0];
-    for (int i = 0; i < 3; i++)
-        ring[i] = ring[i + 2];
     ring[3] = temp;
 }
 
@@ -70,7 +63,7 @@ static std::string sanitizeMove(std::string m) {
 }
 
 //Hovedefunktion
-std::string Algorithm::switchpoints() {
+std::string Algorithm::switchpoints(std::vector<std::string> moves) {
 
     std::string result;
 
@@ -93,14 +86,8 @@ std::string Algorithm::switchpoints() {
         }
 
         if (m == "2D") {
-            rotate2D();
-            result += "2D ";
-            continue;
-        }
-
-        if (m == "2D'") {
-            rotate2DPrime();
-            result += "2D' ";
+            rotateD2();
+            result += "D2 ";
             continue;
         }
 

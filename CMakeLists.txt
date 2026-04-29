@@ -14,7 +14,6 @@ find_package(ur_rtde REQUIRED)
 add_executable(CVProject
     src/Color_Detection.cpp
     src/Algorithm.cpp
-    src/FromVectorToRobot.cpp
     src/GripperConection.cpp
     src/main.cpp 
     src/pose_trans.cpp

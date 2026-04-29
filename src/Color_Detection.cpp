@@ -253,8 +253,102 @@ std::string Color_Detection::scan_whole_cube(){
     return fullstring;
 }
 
+
+std::string Color_Detection::rename(std::string input){
+    std::string finalString;
+    std::unordered_map<char, char> convert = {
+    {'R', 'L'},
+    {'O', 'R'},
+    {'G', 'F'},
+    {'Y', 'U'},
+    {'W', 'D'}
+    };
+    for (char i : input){
+        auto it = convert.find(i)
+        if (it != convert.end()){ // hvis it ikke rammer conver.end hvilket betyder at den har ramt noget i convert, skal den tilføje den converterede string til finalstring
+            finalString += it->second;
+
+        }else { // hvis i ( en string fra input) ikke findes i convert skal den tilføje i til finalstring
+            finalString += i;
+        }
+    }
+    std::cout<< finalString<< std::endl;
+
+    std::map<char, int> counts;
+    for (const auto s : finalString){
+        counts[s]++;
+    }for (const auto [color, count] : counts){
+        std::cout<< color << " : " << count<< std::endl;
+    }
+    return finalString;
+    
+
+
+}
+
 std::string Color_Detection::scan_one_side(std::string color){
     std::string fullstring = "";
+    std::string scanned = "";
+    bool fail = false;
+    while (true) {
+        std::cout<< "Du skal vise side: "<< color << std::endl;
+        align_cube();  
+        scanned = getOneSide();
+        std::cout << scanned << std::endl;
+        if (scanned[4] != color[0]){
+            std::cout<< "Du skal vise side: "<< color << std::endl;
+            fail = true;
+        }
+        for (int i = 0; i < scanned.size(); i++){
+            std::cout << scanned[i] << std::endl;
+            if (scanned[i] == '0'){
+                std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
+                fail = true;
+            }
+        }
+        if (fail) {
+            fail = false;
+            continue;
+        }
+        std::cout<< "Du har detected denne side: "<< scanned << std::endl;
+        fullstring += scanned;
+        break;
+    }
+    
+    return fullstring;
+}
+
+std::string Color_Detection::rename_colors_to_orientations(std::string input){
+    std::string finalString;
+    std::unordered_map<char, char> convert = {
+    {'R', 'L'},
+    {'O', 'R'},
+    {'G', 'F'},
+    {'Y', 'U'},
+    {'W', 'D'}
+    };
+    for (char i : input){
+        auto it = convert.find(i);
+        if (it != convert.end()) { // hvis it ikke rammer conver.end hvilket betyder at den har ramt noget i convert, skal den tilføje den converterede string til finalstring
+            finalString += it->second;
+
+        }else { // hvis i ( en string fra input) ikke findes i convert skal den tilføje i til finalstring
+            finalString += i;
+        }
+    }
+    std::cout<< finalString<< std::endl;
+
+    std::map<char, int> counts;
+    for (const auto s : finalString){
+        counts[s]++;
+    }for (const auto [color, count] : counts){
+        std::cout<< color << " : " << count<< std::endl;
+    }
+    return finalString;
+}
+
+std::string Color_Detection::one_side(std::vector<cv::Point> punkter, std::string color){
+std::string fullstring = "";
     std::string scanned = "";
     bool fail = false;
     while (true) {
