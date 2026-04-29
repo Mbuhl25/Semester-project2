@@ -7,9 +7,8 @@
 #include <stdexcept>
 #include "Color_Detection.h"
 
-Color_Detection::Color_Detection() {}
+Color_Detection::Color_Detection() {} // constructor to make the object
 
-    // constructor to make the object
 Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
     cap = cv::VideoCapture(videoPort);
     cap >> frame;
@@ -119,8 +118,6 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
     }
     lowers = {blue_lower, green_lower, yellow_lower, orange_lower, white_lower, red_lower};
     uppers = {blue_upper, green_upper, yellow_upper, orange_upper, white_upper, red_upper};
-
-    letters = {"B", "G", "Y", "O", "W", "R"};
 }
 
 std::string Color_Detection::get_color(cv::Mat hsv, int x, int y){
@@ -144,8 +141,6 @@ std::string Color_Detection::get_color(cv::Mat hsv, int x, int y){
     }
     return color;
 }
-
-
 
 std::string Color_Detection::get_color_from_5_points(cv::Mat hsv, int x, int y, int offset = 3) {
     std::vector<std::string> colors = {
@@ -183,7 +178,6 @@ std::string Color_Detection::get_color_from_5_points(cv::Mat hsv, int x, int y, 
     return "0";
 }
 
-
 std::string Color_Detection::getOneSide(){
     // Returns 9 letter sequence for one side as a string
     cap >> frame;
@@ -195,28 +189,36 @@ std::string Color_Detection::getOneSide(){
     return oneSideLetters;
 }
 
-
-void Color_Detection::align_cube(){
-    // Create the dots on the screen
-    // And wait for keypress
+std::string Color_Detection::scan_one_side(std::string color){
+    std::string fullstring = "";
+    std::string scanned = "";
+    bool fail = false;
     while (true) {
-        cap >> frame;
-        for (int i = 0; i < points.size(); ++i){
-            cv::circle(frame, points[i], 3, cv::Scalar(0, 255, 0), -1);
+        std::cout<< "Du skal vise side: "<< color << std::endl;
+        align_cube();  
+        scanned = getOneSide();
+        std::cout << scanned << std::endl;
+        if (scanned[4] != color[0]){
+            std::cout<< "Du skal vise side: "<< color << std::endl;
+            fail = true;
         }
-        cv::imshow("Frame", frame);
-
-        char key = (char)cv::waitKey(1);
-        if (key == 'q' || key == 'Q') {
-            print_hsv_values();
-            break;
+        for (int i = 0; i < scanned.size(); i++){
+            std::cout << scanned[i] << std::endl;
+            if (scanned[i] == '0'){
+                std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
+                fail = true;
+            }
         }
-        if (key == 'p'){   
-            print_hsv_values();
+        if (fail) {
+            fail = false;
+            continue;
         }
+        std::cout<< "Du har detected denne side: "<< scanned << std::endl;
+        fullstring += scanned;
+        break;
+    }
+    return fullstring;
 }
-}
-
 
 std::string Color_Detection::scan_whole_cube(){
     std::vector<std::string> expected = {"Y", "O", "G", "W", "R", "B"};
@@ -254,85 +256,43 @@ std::string Color_Detection::scan_whole_cube(){
 }
 
 
-std::string Color_Detection::rename(std::string input){
-    std::string finalString;
-    std::unordered_map<char, char> convert = {
-    {'R', 'L'},
-    {'O', 'R'},
-    {'G', 'F'},
-    {'Y', 'U'},
-    {'W', 'D'}
-    };
-    for (char i : input){
-        auto it = convert.find(i)
-        if (it != convert.end()){ // hvis it ikke rammer conver.end hvilket betyder at den har ramt noget i convert, skal den tilføje den converterede string til finalstring
-            finalString += it->second;
-
-        }else { // hvis i ( en string fra input) ikke findes i convert skal den tilføje i til finalstring
-            finalString += i;
-        }
-    }
-    std::cout<< finalString<< std::endl;
-
-    std::map<char, int> counts;
-    for (const auto s : finalString){
-        counts[s]++;
-    }for (const auto [color, count] : counts){
-        std::cout<< color << " : " << count<< std::endl;
-    }
-    return finalString;
-    
-
-
-}
-
-std::string Color_Detection::scan_one_side(std::string color){
-    std::string fullstring = "";
-    std::string scanned = "";
-    bool fail = false;
+void Color_Detection::align_cube(){
+    // Create the dots on the screen
+    // And wait for keypress
     while (true) {
-        std::cout<< "Du skal vise side: "<< color << std::endl;
-        align_cube();  
-        scanned = getOneSide();
-        std::cout << scanned << std::endl;
-        if (scanned[4] != color[0]){
-            std::cout<< "Du skal vise side: "<< color << std::endl;
-            fail = true;
+        cap >> frame;
+        for (int i = 0; i < points.size(); ++i){
+            cv::circle(frame, points[i], 3, cv::Scalar(0, 255, 0), -1);
         }
-        for (int i = 0; i < scanned.size(); i++){
-            std::cout << scanned[i] << std::endl;
-            if (scanned[i] == '0'){
-                std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
-                fail = true;
-            }
+        cv::imshow("Frame", frame);
+
+        char key = (char)cv::waitKey(1);
+        if (key == 'q' || key == 'Q') {
+            print_hsv_values();
+            break;
         }
-        if (fail) {
-            fail = false;
-            continue;
+        if (key == 'p'){   
+            print_hsv_values();
         }
-        std::cout<< "Du har detected denne side: "<< scanned << std::endl;
-        fullstring += scanned;
-        break;
-    }
-    
-    return fullstring;
+}
 }
 
 std::string Color_Detection::rename_colors_to_orientations(std::string input){
     std::string finalString;
     std::unordered_map<char, char> convert = {
-    {'R', 'L'},
-    {'O', 'R'},
-    {'G', 'F'},
-    {'Y', 'U'},
-    {'W', 'D'}
+        {'R', 'L'},
+        {'O', 'R'},
+        {'G', 'F'},
+        {'Y', 'U'},
+        {'W', 'D'}
     };
-    for (char i : input){
+
+    for (char i : input) {
         auto it = convert.find(i);
         if (it != convert.end()) { // hvis it ikke rammer conver.end hvilket betyder at den har ramt noget i convert, skal den tilføje den converterede string til finalstring
             finalString += it->second;
 
-        }else { // hvis i ( en string fra input) ikke findes i convert skal den tilføje i til finalstring
+        } else { // hvis i ( en string fra input) ikke findes i convert skal den tilføje i til finalstring
             finalString += i;
         }
     }
@@ -347,75 +307,7 @@ std::string Color_Detection::rename_colors_to_orientations(std::string input){
     return finalString;
 }
 
-std::string Color_Detection::one_side(std::vector<cv::Point> punkter, std::string color){
-std::string fullstring = "";
-    std::string scanned = "";
-    bool fail = false;
-    while (true) {
-        std::cout<< "Du skal vise side: "<< color << std::endl;
-        align_cube();  
-        scanned = getOneSide();
-        std::cout << scanned << std::endl;
-        if (scanned[4] != color[0]){
-            std::cout<< "Du skal vise side: "<< color << std::endl;
-            fail = true;
-        }
-        for (int i = 0; i < scanned.size(); i++){
-            std::cout << scanned[i] << std::endl;
-            if (scanned[i] == '0'){
-                std::cout<< "Den har misset en af felterne prøv igen" << std::endl;
-                fail = true;
-            }
-        }
-        if (fail) {
-            fail = false;
-            continue;
-        }
-        std::cout<< "Du har detected denne side: "<< scanned << std::endl;
-        fullstring += scanned;
-        break;
-    }
-    
-    return fullstring;
-}
 
-std::string Color_Detection::rename_colors_to_orientations(std::string input){
-    std::string finalString;
-    std::unordered_map<char, char> convert = {
-    {'R', 'L'},
-    {'O', 'R'},
-    {'G', 'F'},
-    {'Y', 'U'},
-    {'W', 'D'}
-    };
-    for (char i : input){
-        auto it = convert.find(i);
-        if (it != convert.end()) { // hvis it ikke rammer conver.end hvilket betyder at den har ramt noget i convert, skal den tilføje den converterede string til finalstring
-            finalString += it->second;
-
-        }else { // hvis i ( en string fra input) ikke findes i convert skal den tilføje i til finalstring
-            finalString += i;
-        }
-    }
-    std::cout<< finalString<< std::endl;
-
-    std::map<char, int> counts;
-    for (const auto s : finalString){
-        counts[s]++;
-    }for (const auto [color, count] : counts){
-        std::cout<< color << " : " << count<< std::endl;
-    }
-    return finalString;
-}
-
-void Color_Detection::print_cube(){
-    std::cout<< rename_colors_to_orientations(scan_whole_cube())<< std::endl;
-
-}
-
-void Color_Detection::print_side(std::string color){
-    std::cout<< rename_colors_to_orientations(scan_one_side(color))<< std::endl;
-}
 
 void Color_Detection::print_hsv_values(){
     cap >> frame;
@@ -431,4 +323,13 @@ void Color_Detection::print_hsv_values(){
         // std::cout << "point : " << i+1 << std::endl;
         std::cout << h << ", " << s << ", " << v << std::endl;
     }
+}
+
+void Color_Detection::print_side(std::string color){
+    std::cout<< rename_colors_to_orientations(scan_one_side(color))<< std::endl;
+}
+
+void Color_Detection::print_cube(){
+    std::cout<< rename_colors_to_orientations(scan_whole_cube())<< std::endl;
+
 }

@@ -15,25 +15,22 @@ public:
     std::string get_color(cv::Mat, int, int);
     std::string get_color_from_5_points(cv::Mat, int, int, int);
     std::string getOneSide();
-    std::string scan_whole_cube();
     std::string scan_one_side(std::string);
+    std::string scan_whole_cube();
     void align_cube();
     std::string rename_colors_to_orientations(std::string input);
 
     void print_hsv_values();
-    void print_cube();
     void print_side(std::string color);
-
-
-    
+    void print_cube();
 private:
     cv::Mat frame;
     cv::Mat hsv;
     cv::VideoCapture cap;
     std::vector<cv::Point> points;
-    std::vector<std::string> letters;
-    std::vector<cv::Scalar> lowers;
-    std::vector<cv::Scalar> uppers;
+    
+    std::vector<std::string> letters = {"B", "G", "Y", "O", "W", "R"};
+
     // Blue
     cv::Scalar blue_lower;
     cv::Scalar blue_upper;
@@ -52,6 +49,9 @@ private:
     // White
     cv::Scalar white_lower;
     cv::Scalar white_upper;
+
+    std::vector<cv::Scalar> lowers;
+    std::vector<cv::Scalar> uppers;
 };
 
 #endif
