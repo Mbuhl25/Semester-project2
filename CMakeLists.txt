@@ -12,7 +12,7 @@ find_package(ur_rtde REQUIRED)
 
 # Main executable
 add_executable(CVProject
-    src/FromVectorToRobot.cpp
+    src/call_position.cpp
 )
 
 # Include directories
