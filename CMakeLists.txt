@@ -12,12 +12,7 @@ find_package(ur_rtde REQUIRED)
 
 # Main executable
 add_executable(CVProject
-    src/Color_Detection.cpp
-    src/Algorithm.cpp
-    src/GripperConection.cpp
-    # src/main.cpp 
-    src/pose_trans.cpp
-    src/test_moveCube.cpp
+    src/FromVectorToRobot.cpp
 )
 
 # Include directories
