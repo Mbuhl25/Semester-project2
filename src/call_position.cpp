@@ -13,6 +13,7 @@ std::vector<double> linear_positions_cup = rtde_receive.getActualTCPPose();
 for (double q : linear_positions_cup) {
     std::cout << q << ", ";
 }
+return 0;
 }
 
 

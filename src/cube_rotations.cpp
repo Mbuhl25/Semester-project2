@@ -152,6 +152,11 @@ void ain() {
     std::vector<double> work_start = {1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045};
     std::vector<double> cube_approach_point = {0.000942241, -0.38335, 0.15344488, -1.74705, -2.58713, -0.0208294};
 
+
+
+    std::vector<double> grip_point = {0.288383, -0.421722, 0.0409269, 3.04921, 0.717766, 0.10912};
+    std::vector<double> move_up_10_cm = {0, 0, 0.1, 0, 0, 0};
+
     ur_rtde::Path path;
 
     double speed = 0.2;
@@ -165,4 +170,38 @@ void ain() {
 
     
 
+}
+
+int main(){
+    // Control robot
+    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
+
+    double speed = 0.2;
+    double acceleration = 0.1;
+    double blend = 0.05;
+
+
+    // Correct base xyz joint positions {-1.17831, -1.57082, -1.5708, -1.57075, 1.57065, 0}
+    std::vector<double> correct_base_xyz = {0.082022, -0.493722, 0.263118, 0.607995, -3.07307, 0.00410005};
+    std::vector<double> cube_grip_point = {0.096295, -0.499677, 0.0416933, 0.603629, -3.07408, 0.00411514};
+    std::vector<double> cube_approach_point = {0.0953148, -0.499014, 0.0861533, 0.60373, -3.07406, 0.00417964};
+    std::vector<double> up_10 = {0, 0, -0.1, 0, 0, 0};
+    std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, 1.57};
+    std::vector<double> minus_ninety_deg_z = {0, 0, 0, 0, 0, -1.57};
+    std::vector<double> turn_U = pose_trans(cube_grip_point, ninety_deg_z);
+    std::vector<double> turn_U_reverse = pose_trans(cube_grip_point, minus_ninety_deg_z);
+    std::vector<double> move_up_10_cm = {0.0953148, -0.499014, 0.1861533, 0.60373, -3.07406, 0.00417964};
+    std::vector<double> test = pose_trans(cube_grip_point, up_10);
+
+
+
+    rtde_control.moveL(cube_approach_point, speed, acceleration);
+    rtde_control.moveL(cube_grip_point, speed, acceleration);
+    rtde_control.moveL(turn_U, speed, acceleration);
+    rtde_control.moveL(move_up_10_cm, 0.1, acceleration);
+    rtde_control.moveL(correct_base_xyz, 0.1, acceleration);
+    rtde_control.moveL(cube_grip_point, 0.1, acceleration);
+    rtde_control.moveL(turn_U_reverse, 0.1, acceleration);
+
+    
 }
