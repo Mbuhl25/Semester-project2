@@ -192,16 +192,21 @@ int main(){
     std::vector<double> turn_U_reverse = pose_trans(cube_grip_point, minus_ninety_deg_z);
     std::vector<double> move_up_10_cm = {0.0953148, -0.499014, 0.1861533, 0.60373, -3.07406, 0.00417964};
     std::vector<double> test = pose_trans(cube_grip_point, up_10);
+    std::vector<double> ninety_deg_y = {0, 0, 0, 0, 1.57, 0};
+    std::vector<double> turn_y = pose_trans(cube_grip_point, ninety_deg_y);
+    
 
 
+    //rtde_control.moveJ({1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045}, 0.5, 0.3);
+    //rtde_control.moveL(correct_base_xyz, speed, acceleration);
 
-    rtde_control.moveL(cube_approach_point, speed, acceleration);
-    rtde_control.moveL(cube_grip_point, speed, acceleration);
-    rtde_control.moveL(turn_U, speed, acceleration);
-    rtde_control.moveL(move_up_10_cm, 0.1, acceleration);
-    rtde_control.moveL(correct_base_xyz, 0.1, acceleration);
-    rtde_control.moveL(cube_grip_point, 0.1, acceleration);
-    rtde_control.moveL(turn_U_reverse, 0.1, acceleration);
+    ur_rtde::Path path_test;
+
+    path_test.addEntry(makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
+    path_test.addEntry(makeMoveL_TCP(turn_U, speed, acceleration, blend));
+    path_test.addEntry(makeMoveL_TCP(turn_y, speed, acceleration, blend));
+
+    rtde_control.movePath(path_test, false);
 
     
 }
