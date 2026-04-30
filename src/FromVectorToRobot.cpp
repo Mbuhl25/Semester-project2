@@ -4,7 +4,7 @@
 //#include "Algorithm.h"
 #include "pose_trans.h"
 #include <iostream>
-#include <sstream>
+#include <sstream> 
 
 //Algorithm alg;
 
@@ -30,6 +30,9 @@ void FromVectorToRobot::MoveU(){
     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
 
     move_grip_point();
+    std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, 1.57};
+    std::vector<double> turn_U = pose_trans(grip_point, ninety_deg_z);
+
 
 }
 
