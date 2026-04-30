@@ -4,10 +4,10 @@
 #include <iostream>
 #include <string.h>
 #include <Eigen/Dense>
-
+#include "pose_trans.h"
 
 // Helper functions(makes sure that we can use the name of the poses)
-ur_rtde::PathEntry makeMoveL_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+ur_rtde::PathEntry Pose_Trans::makeMoveL_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
 {
     return ur_rtde::PathEntry{
         ur_rtde::PathEntry::MoveL,
@@ -20,7 +20,7 @@ ur_rtde::PathEntry makeMoveL_TCP(const std::vector<double>& pose, double speed, 
     };
 }
 
-ur_rtde::PathEntry makeMoveJ_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+ur_rtde::PathEntry Pose_Trans::makeMoveJ_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
 {
     return ur_rtde::PathEntry{
         ur_rtde::PathEntry::MoveJ,
@@ -33,7 +33,7 @@ ur_rtde::PathEntry makeMoveJ_TCP(const std::vector<double>& pose, double speed, 
     };
 }
 
-ur_rtde::PathEntry makeMoveJ_Q(const std::vector<double>& pose, double speed, double acceleration, double blend)
+ur_rtde::PathEntry Pose_Trans::makeMoveJ_Q(const std::vector<double>& pose, double speed, double acceleration, double blend)
 {
     return ur_rtde::PathEntry{
         ur_rtde::PathEntry::MoveJ,
@@ -47,7 +47,7 @@ ur_rtde::PathEntry makeMoveJ_Q(const std::vector<double>& pose, double speed, do
 }
 
 // Creates 3x3 Rotation matrix, the input is the data type -> Eigen::Vector3d with the rx ry rz values of the feature_pose
-Eigen::Matrix3d rodrigues(const Eigen::Vector3d& r)
+Eigen::Matrix3d Pose_Trans::rodrigues(const Eigen::Vector3d& r)
 {
     double theta = r.norm();
     if (theta < 1e-9)
@@ -68,7 +68,7 @@ Eigen::Matrix3d rodrigues(const Eigen::Vector3d& r)
 }
 
 // Creates the 4x4 Transformation matrix
-Eigen::Matrix4d poseToMatrix(const std::vector<double>& p)
+Eigen::Matrix4d Pose_Trans::poseToMatrix(const std::vector<double>& p)
 {
     Eigen::Matrix4d T = Eigen::Matrix4d::Identity();
 
@@ -87,7 +87,7 @@ Eigen::Matrix4d poseToMatrix(const std::vector<double>& p)
 }
 
 // Reverts the transformation matrix from 4x4 back to 3x3
-std::vector<double> matrixToPose(const Eigen::Matrix4d& T)
+std::vector<double> Pose_Trans::matrixToPose(const Eigen::Matrix4d& T)
 {
     std::vector<double> p(6);
 
@@ -123,7 +123,7 @@ std::vector<double> matrixToPose(const Eigen::Matrix4d& T)
 
 
 // The finished pose_trans function where the inputs are the reference frame(a) and the offeset pose(b)(the transform relative to a)
-std::vector<double> pose_trans(const std::vector<double>& a, const std::vector<double>& b)
+std::vector<double> Pose_Trans::pose_trans(const std::vector<double>& a, const std::vector<double>& b)
 {
     Eigen::Matrix4d T1 = poseToMatrix(a);
     Eigen::Matrix4d T2 = poseToMatrix(b);
@@ -134,7 +134,7 @@ std::vector<double> pose_trans(const std::vector<double>& a, const std::vector<d
 }
 
 
-void move_to_work_start(){
+void Pose_Trans::move_to_work_start(){
     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
     rtde_control.moveJ({1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045}, 0.5, 0.3);
 }
@@ -144,11 +144,12 @@ void move_to_work_start(){
 void ain() {
     // Control robot
     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-    
+    Pose_Trans pt;
+
     // The robot has a 30 degree offset
     std::vector<double> base_correction = {0, 0, 0, 0, 0, 0.5236};
     std::vector<double> xyz_frame = {0.227425, -0.283882, 0.179427, -1.77164, -2.5876, -0.0029743};
-    std::vector<double> corrected_xyz_frame = pose_trans(xyz_frame, base_correction);
+    std::vector<double> corrected_xyz_frame = pt.pose_trans(xyz_frame, base_correction);
     std::vector<double> work_start = {1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045};
     std::vector<double> cube_approach_point = {0.000942241, -0.38335, 0.15344488, -1.74705, -2.58713, -0.0208294};
 
@@ -158,11 +159,9 @@ void ain() {
     double acceleration = 0.1;
     double blend = 0.05;
 
-    path.addEntry(makeMoveL_TCP(xyz_frame, speed, acceleration, blend));
-    path.addEntry(makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
+    path.addEntry(pt.makeMoveL_TCP(xyz_frame, speed, acceleration, blend));
+    path.addEntry(pt.makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
 
     rtde_control.moveL(xyz_frame, speed, acceleration);
-
-    
 
 }

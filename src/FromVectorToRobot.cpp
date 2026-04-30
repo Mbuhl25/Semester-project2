@@ -2,6 +2,7 @@
 #include <ur_rtde/rtde_control_interface.h>
 #include <ur_rtde/rtde_receive_interface.h>
 //#include "Algorithm.h"
+#include "pose_trans.h"
 #include <iostream>
 #include <sstream>
 
@@ -28,7 +29,7 @@ void move_grip_point(){
 void FromVectorToRobot::MoveU(){
     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
 
-    grip_point();
+    move_grip_point();
 
 }
 

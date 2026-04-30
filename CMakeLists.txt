@@ -13,6 +13,7 @@ find_package(ur_rtde REQUIRED)
 # Main executable
 add_executable(CVProject
     src/call_position.cpp
+    src/pose_trans.cpp
 )
 
 # Include directories
