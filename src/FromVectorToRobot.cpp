@@ -40,13 +40,19 @@ void move_grip_point(){
 
 // Manipulation functions
 void FromVectorToRobot::MoveU(){
-    
+    // Back to Neutral Position
     move_to_work_start();
     move_grip_point();
+
+    // Movements
     std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, 1.57};
-    std::vector<double> turn_U = PT.pose_trans(correct_grip_point, ninety_deg_z);
     std::vector<double> move_up_10 = {0, 0, -0.1, 0, 0, 1.57};
+
+    // Pose transformations
+    std::vector<double> turn_U = PT.pose_trans(correct_grip_point, ninety_deg_z);
     std::vector<double> upwards = PT.pose_trans(correct_grip_point, move_up_10);
+
+    // Moves
     rtde_control.moveL(turn_U, 0.5, 0.3);
     rtde_control.moveL(upwards, 0.5, 0.3);
     
@@ -54,33 +60,24 @@ void FromVectorToRobot::MoveU(){
 }
 
 void FromVectorToRobot::MoveUPrime(){
+    // Back to neutral position
     move_to_work_start();
     move_grip_point();
-    std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, -1.57};
-    std::vector<double> turn_U = PT.pose_trans(correct_grip_point, ninety_deg_z);
-    std::vector<double> move_up_10 = {0, 0, -0.1, 0, 0, -1.57};
-    std::vector<double> upwards = PT.pose_trans(correct_grip_point, move_up_10);
-    rtde_control.moveL(turn_U, 0.5, 0.3);
-    rtde_control.moveL(upwards, 0.5, 0.3);
-    
-}
 
-void FromVectorToRobot::MoveU2(){
-        
-    move_to_work_start();
-    move_grip_point();
     // Movements
-    std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, 3.14};
-    std::vector<double> move_up_10 = {0, 0, -0.1, 0, 0, 3.14};
+    std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, -1.57};
+    std::vector<double> move_up_10 = {0, 0, -0.1, 0, 0, -1.57};
 
-    // Pose transformations
+    // Pose Transformations
     std::vector<double> turn_U = PT.pose_trans(correct_grip_point, ninety_deg_z);
     std::vector<double> upwards = PT.pose_trans(correct_grip_point, move_up_10);
 
     // Move commands
     rtde_control.moveL(turn_U, 0.5, 0.3);
     rtde_control.moveL(upwards, 0.5, 0.3);
+    
 }
+
 
 void FromVectorToRobot::MoveD(){
 
