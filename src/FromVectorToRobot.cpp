@@ -40,6 +40,10 @@ void move_grip_point(){
 
 // Manipulation functions
 void FromVectorToRobot::MoveU(){
+    // Speed and Acceleration
+    double speed = 0.2;
+    double acceleration = 0.4;
+    
     // Back to Neutral Position
     move_to_work_start();
     move_grip_point();
@@ -53,13 +57,17 @@ void FromVectorToRobot::MoveU(){
     std::vector<double> upwards = PT.pose_trans(correct_grip_point, move_up_10);
 
     // Moves
-    rtde_control.moveL(turn_U, 0.5, 0.3);
-    rtde_control.moveL(upwards, 0.5, 0.3);
+    rtde_control.moveL(turn_U, speed, acceleration);
+    rtde_control.moveL(upwards, speed, acceleration);
     
 
 }
 
 void FromVectorToRobot::MoveUPrime(){
+    // Speed and Acceleration
+    double speed = 0.2;
+    double acceleration = 0.4;
+
     // Back to neutral position
     move_to_work_start();
     move_grip_point();
@@ -73,10 +81,11 @@ void FromVectorToRobot::MoveUPrime(){
     std::vector<double> upwards = PT.pose_trans(correct_grip_point, move_up_10);
 
     // Move commands
-    rtde_control.moveL(turn_U, 0.5, 0.3);
-    rtde_control.moveL(upwards, 0.5, 0.3);
+    rtde_control.moveL(turn_U, speed, acceleration);
+    rtde_control.moveL(upwards, speed, acceleration);
     
 }
+
 
 
 void FromVectorToRobot::MoveD(){
@@ -87,9 +96,7 @@ void FromVectorToRobot::MoveDPrime(){
 
 }
 
-void FromVectorToRobot::MoveD2(){
 
-}
 
 void FromVectorToRobot::MoveR(){
 
@@ -99,9 +106,7 @@ void FromVectorToRobot::MoveRPrime(){
 
 }
 
-void FromVectorToRobot::MoveR2(){
 
-}
 
 void FromVectorToRobot::MoveL(){
 
@@ -111,9 +116,7 @@ void FromVectorToRobot::MoveLPrime(){
 
 }
 
-void FromVectorToRobot::MoveL2(){
 
-}
 
 void FromVectorToRobot::MoveF(){
 
@@ -123,9 +126,7 @@ void FromVectorToRobot::MoveFPrime(){
 
 }
 
-void FromVectorToRobot::MoveF2(){
 
-}
 
 void FromVectorToRobot::MoveB(){
 
@@ -135,9 +136,7 @@ void FromVectorToRobot::MoveBPrime(){
 
 }
 
-void FromVectorToRobot::MoveB2(){
 
-}
 
 int main(){
     FromVectorToRobot move;
