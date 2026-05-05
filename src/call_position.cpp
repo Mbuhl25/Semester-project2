@@ -8,7 +8,7 @@
 int main() {
 // Get current position
 ur_rtde::RTDEReceiveInterface rtde_receive("192.168.1.11");
-std::vector<double> linear_positions_cup = rtde_receive.getActualTCPPose();
+std::vector<double> linear_positions_cup = rtde_receive.getActualQ();
 
 for (double q : linear_positions_cup) {
     std::cout << q << ", ";

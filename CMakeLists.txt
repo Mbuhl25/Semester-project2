@@ -12,9 +12,12 @@ find_package(ur_rtde REQUIRED)
 
 # Main executable
 add_executable(CVProject
-    src/call_position.cpp
+    src/FromVectorToRobot.cpp
+    #src/call_position.cpp
     src/pose_trans.cpp
 )
+
+
 
 # Include directories
 add_subdirectory(external/min2phaseCXX)
