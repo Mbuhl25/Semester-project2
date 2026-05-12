@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 #include "IndernetForChads.h" 
+#include <thread>
+#include <chrono>
 
 //Algorithm alg;
 
@@ -66,12 +68,14 @@ void FromVectorToRobot::MoveU(){
     std::vector<double> turn_U = PT.pose_trans(parrallel_correct_grip_point, ninety_deg_z);
     std::vector<double> upwards = PT.pose_trans(parrallel_correct_grip_point, move_up_10);
 
-    gripper.gripperClose();
+    gripper.gripperOpen();
 
     // Moves
     rtde_control.moveL(turn_U, speed, acceleration);
-
     gripper.gripperOpen();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    
 
     rtde_control.moveL(upwards, speed, acceleration);
     
@@ -218,10 +222,6 @@ int main(){
     FromVectorToRobot move;
 
     move.MoveU();
-    move.MoveUPrime();
-    move.MoveR();
-    move.MoveRPrime();
-    move.MoveL();
 
 
 }

@@ -32,6 +32,7 @@ int main() {
     // Flyt tilbage
 
     gripperConnection.gripperOpen();
+    gripperConnection.gripperClose();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED ORANGE SIDE ØVERST
 
