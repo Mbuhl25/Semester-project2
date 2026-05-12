@@ -26,6 +26,7 @@ std::vector<double> parrallel_correct_grip_point = PT.pose_trans(grip_point, adj
 std::vector<double> perpendicular_correct_grip_point = PT.pose_trans(parrallel_correct_grip_point, winkelright);
 
 
+
 // Helper functions
 void move_parrallel_to_work_start(){
 
@@ -131,6 +132,29 @@ void FromVectorToRobot::MoveR(){
 
 void FromVectorToRobot::MoveRPrime(){
 
+    double speed = 0.1;
+    double acceleration = 0.1;
+
+    move_perpendicular_to_work_start();
+    
+    std::vector<double> place_tcp_right = {0, -0.02, 0, 0, 0, 0};
+    std::vector<double> turned_r = {0.217449, -0.309183, 0.0347184, -0.840372, -1.4144, -0.956589};
+    //std::vector<double> turned_r_back = {4.4136, -1.6113, 2.5801, -2.4712, -1.5512, -1.4575};
+    //Hvorfor virker lortet ikke
+    
+    std::vector<double> ten_cm_back_z = {0, 0, -0.1, 0, 0, 0};
+    std::vector<double> ten_cm_forwards_z = {0, 0, 0.1, 0, 0, 0};
+
+    std::vector<double> move_right_side = PT.pose_trans(perpendicular_correct_grip_point, place_tcp_right);
+    std::vector<double> get_free_from_cube = PT.pose_trans(turned_r, ten_cm_back_z);
+
+    std::vector<double> get_to_cube = PT.pose_trans(turned_r, ten_cm_forwards_z);
+
+    rtde_control.moveL(get_free_from_cube, speed, acceleration);
+    rtde_control.moveL(get_to_cube, speed, acceleration);
+    //rtde_control.moveL(turned_r_back, speed, acceleration);
+    //fuckt også
+
 }
 
 
@@ -168,6 +192,7 @@ void FromVectorToRobot::MoveBPrime(){
 int main(){
     FromVectorToRobot move;
     move.MoveR();
+    move.MoveRPrime();
 
 
 }
