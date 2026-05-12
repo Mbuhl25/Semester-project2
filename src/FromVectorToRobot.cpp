@@ -136,6 +136,7 @@ void FromVectorToRobot::MoveRPrime(){
     double acceleration = 0.1;
 
     move_perpendicular_to_work_start();
+    move_perpendicular_grip_point();
     
     std::vector<double> place_tcp_right = {0, -0.02, 0, 0, 0, 0};
     std::vector<double> turned_r = {0.217449, -0.309183, 0.0347184, -0.840372, -1.4144, -0.956589};
@@ -146,12 +147,18 @@ void FromVectorToRobot::MoveRPrime(){
     std::vector<double> ten_cm_forwards_z = {0, 0, 0.1, 0, 0, 0};
 
     std::vector<double> move_right_side = PT.pose_trans(perpendicular_correct_grip_point, place_tcp_right);
+    std::vector<double> move_right_side_high = PT.pose_trans(move_right_side, ten_cm_back_z);
     std::vector<double> get_free_from_cube = PT.pose_trans(turned_r, ten_cm_back_z);
 
-    std::vector<double> get_to_cube = PT.pose_trans(turned_r, ten_cm_forwards_z);
 
+    rtde_control.moveL(move_right_side_high, speed, acceleration);
+    std::cout << "move to correct side" << std::endl;
     rtde_control.moveL(get_free_from_cube, speed, acceleration);
-    rtde_control.moveL(get_to_cube, speed, acceleration);
+    std::cout << "get free from cube" << std::endl;
+    rtde_control.moveL(turned_r, speed, acceleration);
+    std::cout << "grip point for cube" << std::endl;
+    rtde_control.moveL(move_right_side, speed, acceleration);
+    std::cout << "turning r" << std::endl;
     //rtde_control.moveL(turned_r_back, speed, acceleration);
     //fuckt også
 
@@ -191,7 +198,6 @@ void FromVectorToRobot::MoveBPrime(){
 
 int main(){
     FromVectorToRobot move;
-    move.MoveR();
     move.MoveRPrime();
 
 
