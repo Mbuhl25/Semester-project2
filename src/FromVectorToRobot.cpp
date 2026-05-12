@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream> 
 #include <IndernetForChads.h>
+#include <IndernetForChads.h>
 
 //Algorithm alg;
 
@@ -216,11 +217,7 @@ int main(){
     gripper.gripperOpen();
 
     FromVectorToRobot move;
+    move.MoveU();
 
-    gripper.gripperOpen();
-    gripper.gripperClose();
-
-    move.MoveLPrime();
-    move.MoveLPrime();
 
 }
