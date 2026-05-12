@@ -40,8 +40,6 @@ public:
         if (sock < 0) {
             if (!connect_to_esp32()) return false;
         }
-
-        // Just send plain text with newline
         std::string msg = command + "\n";
         if (send(sock, msg.c_str(), msg.size(), 0) < 0) {
             std::cerr << "Send failed, reconnecting..." << std::endl;
@@ -50,13 +48,15 @@ public:
             if (!connect_to_esp32()) return false;
             send(sock, msg.c_str(), msg.size(), 0);
         }
-
-        // Read response
+        // Wait briefly for response to arrive
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        
         char buffer[64];
         memset(buffer, 0, sizeof(buffer));
-        recv(sock, buffer, sizeof(buffer), 0);
-        std::cout << "Response: " << buffer;
-
+        int bytes = recv(sock, buffer, sizeof(buffer) - 1, MSG_DONTWAIT);
+        if (bytes > 0) {
+            std::cout << "Response: " << buffer << std::endl;
+        }
         return true;
     }
 
