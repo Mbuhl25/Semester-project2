@@ -8,8 +8,8 @@
 #include <chrono>
 
 
-const std::string ESP32_IP = "192.168.1.100";
-const int PORT = 8080;
+inline const std::string ESP32_IP = "10.96.247.100";
+inline const int PORT = 8080;
 
 class GripperConnection {
 private:
