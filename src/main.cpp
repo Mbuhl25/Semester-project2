@@ -22,15 +22,15 @@ int main() {
 
     //  BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST
     
-     std::string sideY = cube_object.scan_one_side("Y");
+    std::string sideY = cube_object.scan_one_side("Y");
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED ORANGE SIDE ØVERST
 
-     std::string sideO = cube_object.scan_one_side("O");
+    std::string sideO = cube_object.scan_one_side("O");
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED GRØN SIDE ØVERST
 
-     std::string sideG = cube_object.scan_one_side("G");
+    std::string sideG = cube_object.scan_one_side("G");
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED HVID SIDE ØVERST
 
@@ -48,7 +48,6 @@ int main() {
     std::string cubeColorPlacements = sideY + sideO + sideG + sideW + sideR + sideB;                            // get the string for the positions of the cube, a solved cube has this string: "YYYYYYYYYOOOOOOOOOGGGGGGGGGWWWWWWWWWRRRRRRRRRBBBBBBBBB"
     
     std::string cubeOrientationPlacements = cube_object.rename_colors_to_orientations(cubeColorPlacements);     // and expressed as an orientations: "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
-
     
     // min2phase::init();      // use min2phase to generate the solution for the rubix's cube
     // std::string algorithmToSolve = min2phase::solve(cubeOrientationPlacements, 21, 1000000, 0, min2phase::APPEND_LENGTH | min2phase::USE_SEPARATOR, nullptr);
@@ -60,13 +59,15 @@ int main() {
     // std::string algorithmToSolveInBox = algorithmProcessor.switchpoints(algorithmToSolveVector);
     // std::cout << "This is the algorithm to solve the cube while it is sitting in the box: \n" << algorithmToSolveInBox << std::endl;
 
+    std::vector<std::string> algorithmToSolveInBoxVector = algorithmProcessor.FromStringToVec(algorithmToSolveInBox);
+    for (int i = 0; i < algorithmToSolveInBoxVector.size(); ++i) {
+        std::string move = algorithmToSolveInBoxVector[i];
 
+        if (move[0] == '(' || move[0] == '.') {
+            continue;
+        }
 
-    // std::vector<std::string> algorithmToSolveInBoxVector = algorithmProcessor.FromStringToVec(algorithmToSolveInBox);
-    // for (int i = 0; i < algorithmToSolveInBoxVector.size(); ++i) {
-    //     std::string move = algorithmToSolveInBoxVector[i];
-
-    //     std::cout << "now time to move: " << move << std::endl;
+        std::cout << "now time to move: " << move << std::endl;
 
     // if      (move == "U")   {robotMoveFunction_U()}
     // else if (move == "U'")  {robotMoveFunction_Uprime()}
