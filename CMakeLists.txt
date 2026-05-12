@@ -12,12 +12,13 @@ find_package(ur_rtde REQUIRED)
 
 # Main executable
 add_executable(CVProject
-    src/Color_Detection.cpp
-    src/Algorithm.cpp
-    src/main.cpp 
+    src/FromVectorToRobot.cpp
+    #src/call_position.cpp
     src/pose_trans.cpp
+    src/ManipolationOfRing.cpp
 )
-#Ændre main.cpp til Test_main.cpp hvis i vil kører test side y
+
+
 
 # Include directories
 add_subdirectory(external/min2phaseCXX)

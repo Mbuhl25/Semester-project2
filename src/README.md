@@ -109,3 +109,13 @@ rtde_control.moveL({-0.143, -0.435, 0.20, -0.001, 3.12, 0.04}, 0.5, 0.2);
 
 # references
 [SDU_Robotics_UR_RTDE](https://sdurobotics.gitlab.io/ur_rtde/installation/installation.html)
+
+
+# Guide to use robot
+
+### How to recieve position of robot.
+
+Its important to establish a connection with the robot, so in you script for recieving coordinates you have to write this
+```
+ur_rtde::RTDEReceiveInterface rtde_receive("<robot_ip_adress>");
+```

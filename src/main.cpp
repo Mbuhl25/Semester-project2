@@ -8,6 +8,7 @@
 #include "IndernetForChads.h"
 #include "Algorithm.h"
 #include "Color_Detection.h"
+#include "Gripper.h"
 
 int main() {
     Algorithm algorithmProcessor;
@@ -18,11 +19,16 @@ int main() {
     // BEVÆG GRIPPEREN NED TIL TERNINGEN
 
     // GRIB FAST MED GRIPPEREN
-    gripperConnection.gripperClose();
+    gripper.gripperOpen();
+    gripper.gripperClose();
 
-    //  BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST
+    // BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST og blå side udad
     
     std::string sideY = cube_object.scan_one_side("Y");
+
+    // Flyt tilbage
+
+    gripper.gripperOpen();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED ORANGE SIDE ØVERST
 
@@ -44,7 +50,6 @@ int main() {
 
     std::string sideB = cube_object.scan_one_side("B");
 
-    
     std::string cubeColorPlacements = sideY + sideO + sideG + sideW + sideR + sideB;                            // get the string for the positions of the cube, a solved cube has this string: "YYYYYYYYYOOOOOOOOOGGGGGGGGGWWWWWWWWWRRRRRRRRRBBBBBBBBB"
     
     std::string cubeOrientationPlacements = cube_object.rename_colors_to_orientations(cubeColorPlacements);     // and expressed as an orientations: "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
