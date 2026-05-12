@@ -8,27 +8,29 @@
 #include "IndernetForChads.h"
 #include "Algorithm.h"
 #include "Color_Detection.h"
-#include "Gripper.h"
 
 int main() {
-    //Algorithm algorithmProcessor;
+    std::cout << "Program started" << std::endl;
+    std::cout.flush();
     GripperConnection gripperConnection;
+    std::cout << "GripperConnection created" << std::endl;
+    std::cout.flush();
     gripperConnection.connect_to_esp32();
+    gripperConnection.gripperOpen();
+    
+    //Algorithm algorithmProcessor;
+
     //Color_Detection cube_object("Lucas", 0);
 
     // BEVÆG GRIPPEREN NED TIL TERNINGEN
 
     // GRIB FAST MED GRIPPEREN
-    gripperConnection.gripperOpen();
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST og blå side udad
     
     //std::string sideY = cube_object.scan_one_side("Y");
 
     // Flyt tilbage
-
-    gripper.gripperOpen();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED ORANGE SIDE ØVERST
 

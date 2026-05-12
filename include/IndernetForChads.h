@@ -1,3 +1,4 @@
+#include <fcntl.h> 
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -17,25 +18,43 @@ private:
 
 public:
     bool connect_to_esp32() {
+        std::cout << "Attempting to connect to " << ESP32_IP << ":" << PORT << std::endl;
         sock = socket(AF_INET, SOCK_STREAM, 0);
         if (sock < 0) return false;
-
+        
+        // Set non-blocking
+        fcntl(sock, F_SETFL, O_NONBLOCK);
+        
         sockaddr_in server;
         server.sin_family = AF_INET;
         server.sin_port = htons(PORT);
         inet_pton(AF_INET, ESP32_IP.c_str(), &server.sin_addr);
-
-        if (connect(sock, (sockaddr*)&server, sizeof(server)) < 0) {
-            std::cerr << "Connection failed" << std::endl;
-            close(sock);
-            sock = -1;
-            return false;
+        
+        connect(sock, (sockaddr*)&server, sizeof(server));
+        
+        // Wait up to 3 seconds for connection
+        fd_set fdset;
+        FD_ZERO(&fdset);
+        FD_SET(sock, &fdset);
+        struct timeval tv = {3, 0}; // 3 second timeout
+        
+        if (select(sock + 1, NULL, &fdset, NULL, &tv) == 1) {
+            int so_error;
+            socklen_t len = sizeof(so_error);
+            getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
+            if (so_error == 0) {
+                // Set back to blocking
+                fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) & ~O_NONBLOCK);
+                std::cout << "Connected to ESP32" << std::endl;
+                return true;
         }
-
-        std::cout << "Connected to ESP32" << std::endl;
-        return true;
     }
 
+    std::cerr << "Connection failed/timed out" << std::endl;
+    close(sock);
+    sock = -1;
+    return false;
+}
     bool sendCommand(const std::string& command) {
         if (sock < 0) {
             if (!connect_to_esp32()) return false;
