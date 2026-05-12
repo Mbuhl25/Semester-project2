@@ -150,7 +150,6 @@ void FromVectorToRobot::MoveRPrime(){
     rtde_control.moveL(turned_r, speed, acceleration);
     rtde_control.moveL(move_right_side, speed, acceleration);
 
-
 }
 
 
