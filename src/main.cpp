@@ -13,7 +13,7 @@ int main() {
     Algorithm algorithmProcessor;
     GripperConnection gripperConnection;
     gripperConnection.connect_to_esp32();
-    Color_Detection cube_object("Lucas", 1);
+    Color_Detection cube_object("Lucas", 0);
 
     // BEVÆG GRIPPEREN NED TIL TERNINGEN
 
@@ -48,18 +48,16 @@ int main() {
     std::string cubeColorPlacements = sideY + sideO + sideG + sideW + sideR + sideB;                            // get the string for the positions of the cube, a solved cube has this string: "YYYYYYYYYOOOOOOOOOGGGGGGGGGWWWWWWWWWRRRRRRRRRBBBBBBBBB"
     
     std::string cubeOrientationPlacements = cube_object.rename_colors_to_orientations(cubeColorPlacements);     // and expressed as an orientations: "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
-    
-    // min2phase::init();      // use min2phase to generate the solution for the rubix's cube
-    // std::string algorithmToSolve = min2phase::solve(cubeOrientationPlacements, 21, 1000000, 0, min2phase::APPEND_LENGTH | min2phase::USE_SEPARATOR, nullptr);
-    // std::cout << "This is the algorithm to solve the cube: \n" << algorithmToSolve << std::endl;
 
-    
-    // std::vector<std::string> algorithmToSolveVector = algorithmProcessor.FromStringToVec(algorithmToSolve);     // use the algorithm class to get the solution algorithm as a vector instead of a string
+    min2phase::init();      // use min2phase to generate the solution for the rubix's cube
+    std::string algorithmToSolve = min2phase::solve(cubeOrientationPlacements, 21, 1000000, 0, min2phase::APPEND_LENGTH | min2phase::USE_SEPARATOR, nullptr);
+    std::cout << "This is the algorithm to solve the cube: \n" << algorithmToSolve << std::endl;
 
-    // std::string algorithmToSolveInBox = algorithmProcessor.switchpoints(algorithmToSolveVector);
-    // std::cout << "This is the algorithm to solve the cube while it is sitting in the box: \n" << algorithmToSolveInBox << std::endl;
-
+    std::vector<std::string> algorithmToSolveVector = algorithmProcessor.FromStringToVec(algorithmToSolve);     // use the algorithm class to get the solution algorithm as a vector instead of a strin
+    std::string algorithmToSolveInBox = algorithmProcessor.switchpoints(algorithmToSolveVector);
+    std::cout << "This is the algorithm to solve the cube while it is sitting in the box: \n" << algorithmToSolveInBox << std::endl;
     std::vector<std::string> algorithmToSolveInBoxVector = algorithmProcessor.FromStringToVec(algorithmToSolveInBox);
+
     for (int i = 0; i < algorithmToSolveInBoxVector.size(); ++i) {
         std::string move = algorithmToSolveInBoxVector[i];
 
@@ -87,5 +85,5 @@ int main() {
     // else if (move == "B")   {robotMoveFunction_B()}
     // else if (move == "B'")  {robotMoveFunction_Bprime()}
     // else if (move == "B2")  {robotMoveFunction_B(); robotMoveFunction_B()}
-    // }
+    }
 }
