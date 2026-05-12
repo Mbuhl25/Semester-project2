@@ -149,9 +149,6 @@ void FromVectorToRobot::MoveRPrime(){
     rtde_control.moveL(get_free_from_cube, speed, acceleration);
     rtde_control.moveL(turned_r, speed, acceleration);
     rtde_control.moveL(move_right_side, speed, acceleration);
-    std::cout << "turning r" << std::endl;
-    //rtde_control.moveL(turned_r_back, speed, acceleration);
-    //fuckt også
 
 }
 
