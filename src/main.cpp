@@ -10,13 +10,15 @@
 
 int main() {
     Algorithm algorithmProcessor;
-    Color_Detection cube_object("Lucas", 1);
+    Color_Detection cube_object("Lucas", 3);
 
     // BEVÆG GRIPPEREN NED TIL TERNINGEN
 
     // GRIB FAST MED GRIPPEREN
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST
+
+    cube_object.align_cube();
     
     std::string sideY = cube_object.scan_one_side("Y");
 
@@ -44,7 +46,6 @@ int main() {
     std::string cubeColorPlacements = sideY + sideO + sideG + sideW + sideR + sideB;                            // get the string for the positions of the cube, a solved cube has this string: "YYYYYYYYYOOOOOOOOOGGGGGGGGGWWWWWWWWWRRRRRRRRRBBBBBBBBB"
     
     std::string cubeOrientationPlacements = cube_object.rename_colors_to_orientations(cubeColorPlacements);     // and expressed as an orientations: "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
-
     
     min2phase::init();      // use min2phase to generate the solution for the rubix's cube
     std::string algorithmToSolve = min2phase::solve(cubeOrientationPlacements, 21, 1000000, 0, min2phase::APPEND_LENGTH | min2phase::USE_SEPARATOR, nullptr);
@@ -56,11 +57,13 @@ int main() {
     std::string algorithmToSolveInBox = algorithmProcessor.switchpoints(algorithmToSolveVector);
     std::cout << "This is the algorithm to solve the cube while it is sitting in the box: \n" << algorithmToSolveInBox << std::endl;
 
-
-
     std::vector<std::string> algorithmToSolveInBoxVector = algorithmProcessor.FromStringToVec(algorithmToSolveInBox);
     for (int i = 0; i < algorithmToSolveInBoxVector.size(); ++i) {
         std::string move = algorithmToSolveInBoxVector[i];
+
+        if (move[0] == '(' || move[0] == '.') {
+            continue;
+        }
 
         std::cout << "now time to move: " << move << std::endl;
 

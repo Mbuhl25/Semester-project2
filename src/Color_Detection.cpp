@@ -47,23 +47,23 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
 
     if (cubeType == "Lucas") {
         // YELLOW
-        yellow_lower = cv::Scalar(22, 193, 100);
-        yellow_upper = cv::Scalar(37, 246, 255);
+        yellow_lower = cv::Scalar(17, 162, 100);
+        yellow_upper = cv::Scalar(29, 193, 255);
         // ORANGE
-        orange_lower = cv::Scalar(6, 223, 100);
-        orange_upper = cv::Scalar(21, 255, 255);
+        orange_lower = cv::Scalar(6, 195, 100);
+        orange_upper = cv::Scalar(15, 227, 255);
         // GREEN
-        green_lower = cv::Scalar(36, 186, 100);
-        green_upper = cv::Scalar(51, 237, 255);
+        green_lower = cv::Scalar(34, 149, 100);
+        green_upper = cv::Scalar(47, 191, 255);
         // WHITE
-        white_lower = cv::Scalar(29, 5, 100);
-        white_upper = cv::Scalar(89, 41, 255);
+        white_lower = cv::Scalar(-3, -3, 100);
+        white_upper = cv::Scalar(180, 63, 255);
         // RED / PINK
-        red_lower = cv::Scalar(167, 138, 100);
-        red_upper = cv::Scalar(184, 163, 255);
+        red_lower = cv::Scalar(164, 99, 100);
+        red_upper = cv::Scalar(176, 161, 255);
         // BLUE
-        blue_lower = cv::Scalar(93, 139, 100);
-        blue_upper = cv::Scalar(109, 174, 255);
+        blue_lower = cv::Scalar(95, 108, 100);
+        blue_upper = cv::Scalar(108, 156, 255);
     } else if (cubeType == "Mathi") {
         // YELLOW
         yellow_lower = cv::Scalar(22, 100, 120);
@@ -85,28 +85,23 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
         blue_upper = cv::Scalar(120, 255, 255);
     } else if (cubeType == "Gammel") {
         // YELLOW
-        yellow_lower = cv::Scalar(30, 120, 190);
-        yellow_upper = cv::Scalar(40, 255, 255);
-
+        yellow_lower = cv::Scalar(26, 222, 100);
+        yellow_upper = cv::Scalar(58, 275, 255);
         // ORANGE
-        orange_lower = cv::Scalar(5, 150, 200);
-        orange_upper = cv::Scalar(15, 255, 255);
-
+        orange_lower = cv::Scalar(0, 233, 100);
+        orange_upper = cv::Scalar(27, 270, 255);
         // GREEN
-        green_lower = cv::Scalar(60, 120, 140);
-        green_upper = cv::Scalar(75, 255, 200);
-
+        green_lower = cv::Scalar(54, 183, 100);
+        green_upper = cv::Scalar(88, 253, 255);
         // WHITE
-        white_lower = cv::Scalar(0, 0, 190);
-        white_upper = cv::Scalar(179, 30, 255);
-
-        // RED
-        red_lower = cv::Scalar(0, 150, 90);
-        red_upper = cv::Scalar(4, 255, 180);
-
+        white_lower = cv::Scalar(81, 34, 100);
+        white_upper = cv::Scalar(126, 105, 255);
+        // RED / PINK
+        red_lower = cv::Scalar(-5, 184, 100);
+        red_upper = cv::Scalar(31, 241, 255);
         // BLUE
-        blue_lower = cv::Scalar(95, 180, 130);
-        blue_upper = cv::Scalar(110, 255, 200);
+        blue_lower = cv::Scalar(96, 217, 100);
+        blue_upper = cv::Scalar(128, 270, 255);
     } else {
         throw std::invalid_argument("Unknown Cubetype. Pls insert which cube you are using");
     }
@@ -211,7 +206,8 @@ std::string Color_Detection::scan_one_side(std::string color){
         fullstring += scanned;
         break;
     }
-    return fullstring;
+    std:: string finalFullString = rename_colors_to_orientations(fullstring);
+    return finalFullString;
 }
 
 std::string Color_Detection::scan_whole_cube(){
@@ -246,7 +242,9 @@ std::string Color_Detection::scan_whole_cube(){
         }
     }
     std::cout << "The cube looks like this:" << fullstring << std::endl;
-    return fullstring;
+
+    std:: string finalFullString = rename_colors_to_orientations(fullstring);
+    return finalFullString;
 }
 
 
