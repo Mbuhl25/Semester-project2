@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <thread>
 
 #include <min2phase/min2phase.h>
 #include <min2phase/tools.h>
@@ -17,6 +19,12 @@ int main() {
     std::cout.flush();
     gripperConnection.connect_to_esp32();
     gripperConnection.gripperOpen();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    gripperConnection.gripperClose();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    gripperConnection.gripperOpen();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    gripperConnection.gripperClose();
     
     //Algorithm algorithmProcessor;
 
