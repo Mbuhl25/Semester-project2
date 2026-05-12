@@ -7,8 +7,9 @@
 #include <thread>
 #include <chrono>
 
-const std::string ESP32_IP = "10.167.228.102";
-const int PORT = 8080;
+
+inline const std::string ESP32_IP = "10.96.247.100";
+inline const int PORT = 8080;
 
 class GripperConnection {
 private:
@@ -39,8 +40,6 @@ public:
         if (sock < 0) {
             if (!connect_to_esp32()) return false;
         }
-
-        // Just send plain text with newline
         std::string msg = command + "\n";
         if (send(sock, msg.c_str(), msg.size(), 0) < 0) {
             std::cerr << "Send failed, reconnecting..." << std::endl;
@@ -49,13 +48,15 @@ public:
             if (!connect_to_esp32()) return false;
             send(sock, msg.c_str(), msg.size(), 0);
         }
-
-        // Read response
+        // Wait briefly for response to arrive
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        
         char buffer[64];
         memset(buffer, 0, sizeof(buffer));
-        recv(sock, buffer, sizeof(buffer), 0);
-        std::cout << "Response: " << buffer;
-
+        int bytes = recv(sock, buffer, sizeof(buffer) - 1, MSG_DONTWAIT);
+        if (bytes > 0) {
+            std::cout << "Response: " << buffer << std::endl;
+        }
         return true;
     }
 
@@ -66,20 +67,3 @@ public:
         if (sock >= 0) close(sock);
     }
 };
-
-int main() {
-    GripperConnection gripper;
-
-    if (!gripper.connect_to_esp32()) {
-        std::cerr << "Failed to connect" << std::endl;
-        return 1;
-    }
-
-    while (true) {
-        gripper.gripperOpen();
-        
-        gripper.gripperClose();
-    }
-
-    return 0;
-}
