@@ -7,7 +7,6 @@
 
 #include "IndernetForChads.h"
 #include "Algorithm.h"
-#include "Color_Detection.h"
 
 int main() {
     std::cout << "Program started" << std::endl;
@@ -31,6 +30,8 @@ int main() {
     //std::string sideY = cube_object.scan_one_side("Y");
 
     // Flyt tilbage
+
+    gripper.gripperOpen();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED ORANGE SIDE ØVERST
 

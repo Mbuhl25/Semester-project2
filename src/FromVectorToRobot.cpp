@@ -5,12 +5,13 @@
 #include "pose_trans.h"
 #include <iostream>
 #include <sstream> 
+#include <IndernetForChads.h>
 
 //Algorithm alg;
 
 //std::string FromVectorToRobot::VecMove(std::vector<std::string> moves){}
 
-
+GripperConnection gripper;
 
 // Connect to robot
 ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
@@ -191,12 +192,18 @@ void FromVectorToRobot::MoveBPrime(){
 
 
 int main(){
+    gripper.connect_to_esp32();
+
     FromVectorToRobot move;
+
+    gripper.gripperOpen();
+    gripper.gripperClose();
+
     move.MoveU();
     move.MoveUPrime();
     move.MoveR();
     move.MoveRPrime();
     move.MoveL();
-
+    move.MoveLPrime();
 
 }
