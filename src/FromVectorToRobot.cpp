@@ -141,16 +141,9 @@ void FromVectorToRobot::MoveRPrime(){
 
 
     rtde_control.moveL(move_right_side_high, speed, acceleration);
-    std::cout << "move to correct side" << std::endl;
     rtde_control.moveL(get_free_from_cube, speed, acceleration);
-    std::cout << "get free from cube" << std::endl;
     rtde_control.moveL(turned_r, speed, acceleration);
-    std::cout << "grip point for cube" << std::endl;
     rtde_control.moveL(move_right_side, speed, acceleration);
-    std::cout << "turning r" << std::endl;
-    //rtde_control.moveL(turned_r_back, speed, acceleration);
-    //fuckt også
-
 }
 
 
