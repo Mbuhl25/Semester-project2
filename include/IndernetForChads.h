@@ -7,7 +7,8 @@
 #include <thread>
 #include <chrono>
 
-const std::string ESP32_IP = "10.167.228.102";
+
+const std::string ESP32_IP = "10.243.108.102";
 const int PORT = 8080;
 
 class GripperConnection {
@@ -66,20 +67,3 @@ public:
         if (sock >= 0) close(sock);
     }
 };
-
-int main() {
-    GripperConnection gripper;
-
-    if (!gripper.connect_to_esp32()) {
-        std::cerr << "Failed to connect" << std::endl;
-        return 1;
-    }
-
-    while (true) {
-        gripper.gripperOpen();
-        
-        gripper.gripperClose();
-    }
-
-    return 0;
-}
