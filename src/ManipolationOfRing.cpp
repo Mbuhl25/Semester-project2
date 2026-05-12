@@ -42,21 +42,23 @@ char Algorithm::resolve(char face) {
 }
 
 //Fjerner whitespace og normaliserer apostroffer
+//Vigtigt fix \xe2\x80\x99 er de 3 UTF-8 bytes der udgør ' (krøllet apostrof, U+2019)
 static std::string sanitizeMove(std::string m) {
     
     m.erase(std::remove(m.begin(), m.end(), '\r'), m.end());
     m.erase(std::remove(m.begin(), m.end(), '\n'), m.end());
     m.erase(std::remove(m.begin(), m.end(), ' '), m.end());
 
-    for (char &c : m) {
-        if (c == '’') c = '\'';  //normalization
-    }
+    size_t pos;
+    while ((pos = m.find("\xe2\x80\x99")) != std::string::npos)
+        m.replace(pos, 3, "'");
 
     return m;
 }
 
+
 //Hovedefunktion
-std::string Algorithm::switchpoints() {
+std::string Algorithm::switchpoints(std::vector<std::string> moves) {
 
     std::string result;
 
@@ -75,6 +77,13 @@ std::string Algorithm::switchpoints() {
         if (m == "D'") {
             rotateDPrime();
             result += "D' ";
+            continue;
+        }
+
+        if (m == "D2") {
+            rotateD();
+            rotateD();
+            result += "D2 ";
             continue;
         }
 
