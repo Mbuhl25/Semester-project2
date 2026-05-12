@@ -49,6 +49,9 @@ public:
 
 private:
 
+    double speed = 0.1;
+    double acceleration = 0.1;
+
 };
 
 #endif

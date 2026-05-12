@@ -52,10 +52,7 @@ void move_perpendicular_grip_point(){
 
 // Manipulation functions
 void FromVectorToRobot::MoveU(){
-    // Speed and Acceleration
-    double speed = 0.2;
-    double acceleration = 0.4;
-    
+
     // Back to Neutral Position
     move_parrallel_to_work_start();
     move_parrallel_grip_point();
@@ -76,9 +73,6 @@ void FromVectorToRobot::MoveU(){
 }
 
 void FromVectorToRobot::MoveUPrime(){
-    // Speed and Acceleration
-    double speed = 0.2;
-    double acceleration = 0.4;
 
     // Back to neutral position
     move_parrallel_to_work_start();
@@ -111,9 +105,6 @@ void FromVectorToRobot::MoveDPrime(){
 
 
 void FromVectorToRobot::MoveR(){
-    // Speed and Acceleration
-    double speed = 0.1;
-    double acceleration = 0.1;
 
     move_perpendicular_to_work_start();
     move_perpendicular_grip_point();
@@ -132,8 +123,6 @@ void FromVectorToRobot::MoveR(){
 
 void FromVectorToRobot::MoveRPrime(){
 
-    double speed = 0.1;
-    double acceleration = 0.1;
 
     move_perpendicular_to_work_start();
     
@@ -160,6 +149,20 @@ void FromVectorToRobot::MoveRPrime(){
 
 
 void FromVectorToRobot::MoveL(){
+
+    move_perpendicular_to_work_start();
+    move_perpendicular_grip_point();
+    
+    std::vector<double> place_tcp_left = {0, 0.02, 0, 0, 0, 0};
+    std::vector<double> turned_l = {0.217449, -0.309183, 0.0347184, -0.840372, -1.4144, -0.956589};
+    std::vector<double> ten_cm_back_z = {0, 0, -0.1, 0, 0, 0};
+
+    std::vector<double> move_left_side = PT.pose_trans(perpendicular_correct_grip_point, place_tcp_left);
+    std::vector<double> get_free_from_cube = PT.pose_trans(turned_l, ten_cm_back_z);
+
+    rtde_control.moveL(move_left_side, speed, acceleration);
+    rtde_control.moveL(turned_l, speed, acceleration);
+    rtde_control.moveL(get_free_from_cube, speed, acceleration);
 
 }
 
