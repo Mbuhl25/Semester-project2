@@ -66,8 +66,13 @@ void FromVectorToRobot::MoveU(){
     std::vector<double> turn_U = PT.pose_trans(parrallel_correct_grip_point, ninety_deg_z);
     std::vector<double> upwards = PT.pose_trans(parrallel_correct_grip_point, move_up_10);
 
+    gripper.gripperClose();
+
     // Moves
     rtde_control.moveL(turn_U, speed, acceleration);
+
+    gripper.gripperOpen();
+
     rtde_control.moveL(upwards, speed, acceleration);
     
 
@@ -209,6 +214,7 @@ void FromVectorToRobot::MoveBPrime(){
 
 int main(){
     gripper.connect_to_esp32();
+    gripper.gripperOpen();
 
     FromVectorToRobot move;
 
