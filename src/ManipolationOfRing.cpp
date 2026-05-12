@@ -1,7 +1,8 @@
-#include "Algorithm.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+
+#include "ManipolationOfRing.h"
 
 //Sætter L F R B i ring
 enum Faces { L = 0, F = 1, R = 2, B = 3 };

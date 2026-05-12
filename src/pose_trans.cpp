@@ -1,9 +1,11 @@
 // Include the correct header for the control interface:
-#include <ur_rtde/rtde_control_interface.h>
-#include <ur_rtde/rtde_receive_interface.h>
 #include <iostream>
 #include <string.h>
 #include <Eigen/Dense>
+
+#include <ur_rtde/rtde_control_interface.h>
+#include <ur_rtde/rtde_receive_interface.h>
+
 #include "pose_trans.h"
 
 // Helper functions(makes sure that we can use the name of the poses)
@@ -137,31 +139,4 @@ std::vector<double> Pose_Trans::pose_trans(const std::vector<double>& a, const s
 void Pose_Trans::move_to_work_start(){
     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
     rtde_control.moveJ({1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045}, 0.5, 0.3);
-}
-
-
-//also works now
-void ain() {
-    // Control robot
-    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-    Pose_Trans pt;
-
-    // The robot has a 30 degree offset
-    std::vector<double> base_correction = {0, 0, 0, 0, 0, 0.5236};
-    std::vector<double> xyz_frame = {0.227425, -0.283882, 0.179427, -1.77164, -2.5876, -0.0029743};
-    std::vector<double> corrected_xyz_frame = pt.pose_trans(xyz_frame, base_correction);
-    std::vector<double> work_start = {1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045};
-    std::vector<double> cube_approach_point = {0.000942241, -0.38335, 0.15344488, -1.74705, -2.58713, -0.0208294};
-
-    ur_rtde::Path path;
-
-    double speed = 0.2;
-    double acceleration = 0.1;
-    double blend = 0.05;
-
-    path.addEntry(pt.makeMoveL_TCP(xyz_frame, speed, acceleration, blend));
-    path.addEntry(pt.makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
-
-    rtde_control.moveL(xyz_frame, speed, acceleration);
-
 }

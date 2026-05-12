@@ -6,7 +6,7 @@
 #include <min2phase/tools.h>
 
 #include "IndernetForChads.h"
-#include "Algorithm.h"
+#include "ManipolationOfRing.h"
 #include "Color_Detection.h"
 
 int main() {
