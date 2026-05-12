@@ -7,8 +7,6 @@
 
 #include "IndernetForChads.h"
 #include "Algorithm.h"
-#include "Color_Detection.h"
-#include "Gripper.h"
 
 int main() {
     //Algorithm algorithmProcessor;
@@ -28,7 +26,7 @@ int main() {
 
     // Flyt tilbage
 
-    gripper.gripperOpen();
+    gripperConnection.gripperOpen();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED ORANGE SIDE ØVERST
 
