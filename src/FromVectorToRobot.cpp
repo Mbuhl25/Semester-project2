@@ -156,6 +156,12 @@ void FromVectorToRobot::MoveRPrime(){
 
 
 void FromVectorToRobot::MoveL(){
+    move_perpendicular_to_work_start();
+    move_perpendicular_grip_point();
+
+    std::vector<double> place_tcp_left = {0, -0.02, 0, 0, 0, 0};
+
+    std::vector<double> move_left_side = PT.pose_trans(perpendicular_correct_grip_point, place_tcp_left);
 
     move_perpendicular_to_work_start();
     move_perpendicular_grip_point();
@@ -218,7 +224,7 @@ void FromVectorToRobot::MoveBPrime(){
 
 int main(){
     FromVectorToRobot move;
-    move.MoveRPrime();
+    move.MoveL();
 
 
 }
