@@ -5,8 +5,6 @@
 #include "pose_trans.h"
 #include <iostream>
 #include <sstream> 
-#include <IndernetForChads.h>
-#include <IndernetForChads.h>
 
 //Algorithm alg;
 
@@ -217,7 +215,12 @@ int main(){
     gripper.gripperOpen();
 
     FromVectorToRobot move;
+
     move.MoveU();
+    move.MoveUPrime();
+    move.MoveR();
+    move.MoveRPrime();
+    move.MoveL();
 
 
 }
