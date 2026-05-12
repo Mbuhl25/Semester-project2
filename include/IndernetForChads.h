@@ -56,27 +56,55 @@ public:
     return false;
 }
     bool sendCommand(const std::string& command) {
-        if (sock < 0) {
-            if (!connect_to_esp32()) return false;
+    std::string msg = command + "\n";
+
+    // Try sending, with one reconnect attempt
+    for (int attempt = 0; attempt < 2; ++attempt) {
+        if (sock < 0 && !connect_to_esp32()) {
+            std::cerr << "Could not connect" << std::endl;
+            return false;
         }
-        std::string msg = command + "\n";
-        if (send(sock, msg.c_str(), msg.size(), 0) < 0) {
-            std::cerr << "Send failed, reconnecting..." << std::endl;
-            close(sock);
-            sock = -1;
-            if (!connect_to_esp32()) return false;
-            send(sock, msg.c_str(), msg.size(), 0);
+
+        ssize_t sent = send(sock, msg.c_str(), msg.size(), 0);
+        if (sent == (ssize_t)msg.size()) {
+            break;  // success
         }
-        // Wait briefly for response to arrive
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        
-        char buffer[64];
-        memset(buffer, 0, sizeof(buffer));
-        int bytes = recv(sock, buffer, sizeof(buffer) - 1, MSG_DONTWAIT);
-        if (bytes > 0) {
-            std::cout << "Response: " << buffer << std::endl;
+
+        std::cerr << "Send failed (attempt " << attempt + 1 << "), reconnecting..." << std::endl;
+        close(sock);
+        sock = -1;
+
+        if (attempt == 1) {
+            std::cerr << "Send failed after reconnect" << std::endl;
+            return false;
         }
-        return true;
+    }
+
+    // Wait for response with a proper timeout using select()
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sock, &readfds);
+    struct timeval tv = {2, 0};  // 2 second timeout
+
+    int ready = select(sock + 1, &readfds, NULL, NULL, &tv);
+    if (ready <= 0) {
+        std::cerr << "No response received (timeout or error)" << std::endl;
+        // Don't close — command may still have been received
+        return false;
+    }
+
+    char buffer[64];
+    memset(buffer, 0, sizeof(buffer));
+    int bytes = recv(sock, buffer, sizeof(buffer) - 1, 0);
+    if (bytes <= 0) {
+        std::cerr << "Connection closed by ESP32" << std::endl;
+        close(sock);
+        sock = -1;
+        return false;
+    }
+
+    std::cout << "Response: " << buffer;
+    return true;
     }
 
     void gripperOpen()  { sendCommand("open"); }
