@@ -218,10 +218,4 @@ int main(){
     FromVectorToRobot move;
 
     move.MoveU();
-    move.MoveUPrime();
-    move.MoveR();
-    move.MoveRPrime();
-    move.MoveL();
-    move.MoveLPrime();
-
 }
