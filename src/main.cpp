@@ -7,6 +7,8 @@
 
 #include "IndernetForChads.h"
 #include "Algorithm.h"
+#include "Color_Detection.h"
+#include "Gripper.h"
 
 int main() {
     std::cout << "Program started" << std::endl;
@@ -24,6 +26,8 @@ int main() {
     // BEVÆG GRIPPEREN NED TIL TERNINGEN
 
     // GRIB FAST MED GRIPPEREN
+    // gripper.gripperOpen();
+    // gripper.gripperClose();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST og blå side udad
     

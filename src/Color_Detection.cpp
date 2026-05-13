@@ -47,23 +47,23 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
 
     if (cubeType == "Lucas") {
         // YELLOW
-        yellow_lower = cv::Scalar(17, 162, 100);
-        yellow_upper = cv::Scalar(29, 193, 255);
+        yellow_lower = cv::Scalar(24, 59, 100);
+        yellow_upper = cv::Scalar(33, 98, 255);
         // ORANGE
-        orange_lower = cv::Scalar(6, 195, 100);
-        orange_upper = cv::Scalar(15, 227, 255);
+        orange_lower = cv::Scalar(15, 213, 100);
+        orange_upper = cv::Scalar(26, 258, 255);
         // GREEN
-        green_lower = cv::Scalar(34, 149, 100);
-        green_upper = cv::Scalar(47, 191, 255);
+        green_lower = cv::Scalar(35, 151, 100);
+        green_upper = cv::Scalar(45, 189, 255);
         // WHITE
         white_lower = cv::Scalar(-3, -3, 100);
-        white_upper = cv::Scalar(180, 63, 255);
+        white_upper = cv::Scalar(93, 16, 255);
         // RED / PINK
-        red_lower = cv::Scalar(164, 99, 100);
-        red_upper = cv::Scalar(176, 161, 255);
+        red_lower = cv::Scalar(147, 79, 100);
+        red_upper = cv::Scalar(164, 116, 255);
         // BLUE
-        blue_lower = cv::Scalar(95, 108, 100);
-        blue_upper = cv::Scalar(108, 156, 255);
+        blue_lower = cv::Scalar(87, 95, 100);
+        blue_upper = cv::Scalar(103, 129, 255);
     } else if (cubeType == "Mathi") {
         // YELLOW
         yellow_lower = cv::Scalar(22, 100, 120);
@@ -139,14 +139,8 @@ std::string Color_Detection::get_color_from_5_points(cv::Mat hsv, int x, int y, 
         get_color(hsv, x, y - offset), // op
         get_color(hsv, x, y + offset) // ned
     };
-    cv::Vec3b pixel_1 = hsv.at<cv::Vec3b>(y, x);
-    cv::Vec3b pixel_2 = hsv.at<cv::Vec3b>(y, x - offset);
-    cv::Vec3b pixel_3 = hsv.at<cv::Vec3b>(y, x + offset);
-    cv::Vec3b pixel_4 = hsv.at<cv::Vec3b>(y - offset, x);
-    cv::Vec3b pixel_5 = hsv.at<cv::Vec3b>(y + offset, x);
-    std::vector<std::string> hsv_values = {
-        
-    };
+    
+    
     std::map<std::string, int> counts;
     std::string mest;
     int max_count = 0;
@@ -173,7 +167,7 @@ std::string Color_Detection::getOneSide(){
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     std::string oneSideLetters = "";
     for (int i = 0; i < points.size(); ++i){
-        oneSideLetters += get_color(hsv, points[i].x, points[i].y);//check_color_5_points(hsv, p.x, p.y);
+        oneSideLetters += get_color_from_5_points(hsv, points[i].x, points[i].y);
     }
     return oneSideLetters;
 }
@@ -304,16 +298,46 @@ std::string Color_Detection::rename_colors_to_orientations(std::string input){
 void Color_Detection::print_hsv_values(){
     cap >> frame;
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+    int offset = 3;
 
-    for(int i = 0; i < points.size(); i++){
-        cv::Vec3b pixel = hsv.at<cv::Vec3b>(points[i].y,points[i].x);
+    for (const auto& p : points){
 
-        int h = pixel[0];
-        int s = pixel[1];
-        int v = pixel[2];    
+        int x = p.x;
+        int y = p.y;
 
-        // std::cout << "point : " << i+1 << std::endl;
-        std::cout << h << ", " << s << ", " << v << std::endl;
+        cv::Vec3b pixel_1 = hsv.at<cv::Vec3b>(y, x);
+        cv::Vec3b pixel_2 = hsv.at<cv::Vec3b>(y, x - offset);
+        cv::Vec3b pixel_3 = hsv.at<cv::Vec3b>(y, x + offset);
+        cv::Vec3b pixel_4 = hsv.at<cv::Vec3b>(y - offset, x);
+        cv::Vec3b pixel_5 = hsv.at<cv::Vec3b>(y + offset, x);
+
+        hsv_values.clear();
+
+        hsv_values.push_back(pixel_1);
+        hsv_values.push_back(pixel_2);
+        hsv_values.push_back(pixel_3);
+        hsv_values.push_back(pixel_4);
+        hsv_values.push_back(pixel_5);
+
+        int h_value = 0;
+        int s_value = 0;
+        int v_value = 0;
+
+        for (const auto& pixel : hsv_values){
+
+            int h = pixel[0];
+            int s = pixel[1];   
+            int v = pixel[2];
+
+            h_value += h;
+            s_value += s; 
+            v_value += v;
+    }
+    h_value = h_value / 5;
+    s_value /= 5;
+    v_value /= 5;
+
+    std::cout << h_value << ", "<< s_value<< ", "<< v_value << std::endl;
     }
 }
 
