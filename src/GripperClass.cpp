@@ -1,75 +1,107 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <WiFi.h>
+#include <WiFiUdp.h>
 
-const char* ssid     = "OnePlus Nord 5 d3ti";
-const char* password = "gtxa8399";
+const char* ssid     = "Mathias Bergholt - iPhone (2)";
+const char* password = "Mathias8";
 
-WiFiServer tcpServer(8080);  // Raw TCP on port 8080
-WiFiClient client;           // Persistent client connection
+WiFiUDP udp;
+const int UDP_PORT = 8080;
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 class Gripper {
-  public:
-  void begin() {
-    Wire.begin();
-    pwm.begin();
-    pwm.setPWMFreq(50);
-    pwm.setPWM(0, 0, 150);
-  }
-  void open()  { pwm.setPWM(0, 0, 350); }
-  void close() { pwm.setPWM(0, 0, 245); }
+public:
+    void begin() {
+        Wire.begin();
+        pwm.begin();
+        pwm.setPWMFreq(50);
+        pwm.setPWM(0, 0, 150);
+    }
+    void open()  { pwm.setPWM(0, 0, 350); }
+    void close() { pwm.setPWM(0, 0, 245); }
 };
 
 Gripper gripper;
 
-void setup() {
-  Serial.begin(115200);
-  delay(2000);
-
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("\nConnected!");
-  Serial.println(WiFi.localIP());
-
-  gripper.begin();
-  tcpServer.begin();
-  Serial.println("TCP Server started on port 8080");
+void ensureWiFi() {
+    if (WiFi.status() == WL_CONNECTED) return;
+    Serial.println("WiFi lost, reconnecting...");
+    WiFi.disconnect();
+    WiFi.begin(ssid, password);
+    int tries = 0;
+    while (WiFi.status() != WL_CONNECTED && tries++ < 20) {
+        delay(500);
+        Serial.print(".");
+    }
+    if (WiFi.status() == WL_CONNECTED)
+        Serial.println("\nWiFi reconnected");
 }
 
+void setup() {
+    Serial.begin(115200);
+    delay(2000);
+
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);  // no static IP, just DHCP
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("\nConnected!");
+    Serial.println(WiFi.localIP());  // print whatever IP it got
+
+    gripper.begin();
+    udp.begin(UDP_PORT);
+    Serial.println("UDP listening on port 8080");
+}
+int lastSeq = -1;
+
 void loop() {
-  // Accept new client if none connected
-  if (!client || !client.connected()) {
-    client = tcpServer.accept();
-    if (client) {
-      Serial.println("Client connected");
-    }
-  }
+    ensureWiFi();
 
-  // Read command if client is connected
-  if (client && client.connected() && client.available()) {
-    String command = client.readStringUntil('\n');
-    command.trim();  // Remove whitespace/newline
+    int packetSize = udp.parsePacket();
+    if (packetSize) {
+        char buffer[64] = {};
+        udp.read(buffer, sizeof(buffer) - 1);
+        String msg = String(buffer);
+        msg.trim();
 
-    Serial.println("Command: " + command);
+        // Parse "seq:command"
+        int colonIndex = msg.indexOf(':');
+        if (colonIndex == -1) return;  // malformed
 
-    if (command == "open") {
-      gripper.open();
-      client.println("opened");
-    } 
-    else if (command == "close") {
-      gripper.close();
-      client.println("closed");
+        int seq = msg.substring(0, colonIndex).toInt();
+        String command = msg.substring(colonIndex + 1);
+
+        Serial.println("Seq: " + String(seq) + " Command: " + command);
+
+        // Always reply, but only move servo if new command
+        String response = "unknown command";
+
+        if (command == "open") {
+            if (seq != lastSeq) {
+                gripper.open();
+                delay(500);
+          }
+          response = String(seq) + ":opened";
+}       else if (command == "close") {
+            if (seq != lastSeq) {
+                gripper.close();
+                delay(500);
     }
-    else {
-      client.println("unknown command");
+    response = String(seq) + ":closed";
+}
+
+        lastSeq = seq;
+
+        udp.beginPacket(udp.remoteIP(), 8081);
+        udp.print(response);
+        udp.endPacket();
     }
-  }
+
+    delay(5);
 }
