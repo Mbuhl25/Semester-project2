@@ -24,8 +24,6 @@ int main() {
     gripperConnection.gripperClose();
     std::this_thread::sleep_for(std::chrono::seconds(2));
     gripperConnection.gripperOpen();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    gripperConnection.gripperClose();
     
     //Algorithm algorithmProcessor;
 
