@@ -10,6 +10,8 @@
 #include "Color_Detection.h"
 
 int main() {
+    // Connect to robot
+    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
     std::vector<std::string> algorithmToSolveInBoxVector{"U", "U'", "R"};
 
     for (int i = 0; i < algorithmToSolveInBoxVector.size(); ++i) {

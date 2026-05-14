@@ -1,24 +1,17 @@
-#include "FromVectorToRobot.h"
-#include <ur_rtde/rtde_control_interface.h>
-#include <ur_rtde/rtde_receive_interface.h>
-//#include "Algorithm.h"
-#include "KinematicsMath.h"
+
 #include <iostream>
 #include <sstream>
-#include "IndernetForChads.h" 
 #include <thread>
 #include <chrono>
 
-//Algorithm alg;
+#include <ur_rtde/rtde_control_interface.h>
+#include <ur_rtde/rtde_receive_interface.h>
 
-//std::string FromVectorToRobot::VecMove(std::vector<std::string> moves){}
+#include "FromVectorToRobot.h"
+#include "KinematicsMath.h"
+#include "IndernetForChads.h" 
 
 GripperConnection gripper;
-
-// Connect to robot
-ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-
-
 Kinematics kinematics;
 
 // Global waypoints
@@ -203,13 +196,5 @@ void FromVectorToRobot::MoveB(){
 }
 
 void FromVectorToRobot::MoveBPrime(){
-
-}
-
-
-
-int main(){
-
-
 
 }
