@@ -4,10 +4,12 @@
 #include <iostream>
 #include <string.h>
 #include <Eigen/Dense>
-#include "pose_trans.h"
+#include "KinematicsMath.h"
+
+Kinematics::Kinematics() {}
 
 // Helper functions(makes sure that we can use the name of the poses)
-ur_rtde::PathEntry Pose_Trans::makeMoveL_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+ur_rtde::PathEntry Kinematics::makeMoveL_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
 {
     return ur_rtde::PathEntry{
         ur_rtde::PathEntry::MoveL,
@@ -20,7 +22,7 @@ ur_rtde::PathEntry Pose_Trans::makeMoveL_TCP(const std::vector<double>& pose, do
     };
 }
 
-ur_rtde::PathEntry Pose_Trans::makeMoveJ_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+ur_rtde::PathEntry Kinematics::makeMoveJ_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
 {
     return ur_rtde::PathEntry{
         ur_rtde::PathEntry::MoveJ,
@@ -33,7 +35,7 @@ ur_rtde::PathEntry Pose_Trans::makeMoveJ_TCP(const std::vector<double>& pose, do
     };
 }
 
-ur_rtde::PathEntry Pose_Trans::makeMoveJ_Q(const std::vector<double>& pose, double speed, double acceleration, double blend)
+ur_rtde::PathEntry Kinematics::makeMoveJ_Q(const std::vector<double>& pose, double speed, double acceleration, double blend)
 {
     return ur_rtde::PathEntry{
         ur_rtde::PathEntry::MoveJ,
@@ -47,7 +49,7 @@ ur_rtde::PathEntry Pose_Trans::makeMoveJ_Q(const std::vector<double>& pose, doub
 }
 
 // Creates 3x3 Rotation matrix, the input is the data type -> Eigen::Vector3d with the rx ry rz values of the feature_pose
-Eigen::Matrix3d Pose_Trans::rodrigues(const Eigen::Vector3d& r)
+Eigen::Matrix3d Kinematics::rodrigues(const Eigen::Vector3d& r)
 {
     double theta = r.norm();
     if (theta < 1e-9)
@@ -57,8 +59,8 @@ Eigen::Matrix3d Pose_Trans::rodrigues(const Eigen::Vector3d& r)
 
     Eigen::Matrix3d K;
     K <<     0,   -u.z(),  u.y(),
-          u.z(),      0,  -u.x(),
-         -u.y(),   u.x(),     0;
+        u.z(),      0,  -u.x(),
+        -u.y(),   u.x(),     0;
 
     Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
 
@@ -68,7 +70,7 @@ Eigen::Matrix3d Pose_Trans::rodrigues(const Eigen::Vector3d& r)
 }
 
 // Creates the 4x4 Transformation matrix
-Eigen::Matrix4d Pose_Trans::poseToMatrix(const std::vector<double>& p)
+Eigen::Matrix4d Kinematics::poseToMatrix(const std::vector<double>& p)
 {
     Eigen::Matrix4d T = Eigen::Matrix4d::Identity();
 
@@ -86,8 +88,8 @@ Eigen::Matrix4d Pose_Trans::poseToMatrix(const std::vector<double>& p)
     return T;
 }
 
-// Reverts the transformation matrix from 4x4 back to 3x3
-std::vector<double> Pose_Trans::matrixToPose(const Eigen::Matrix4d& T)
+// Reverts the transformation matrix from 4x4 back to 6x1
+std::vector<double> Kinematics::matrixToPose(const Eigen::Matrix4d& T)
 {
     std::vector<double> p(6);
 
@@ -108,8 +110,8 @@ std::vector<double> Pose_Trans::matrixToPose(const Eigen::Matrix4d& T)
 
     Eigen::Vector3d u;
     u << R(2,1) - R(1,2),
-         R(0,2) - R(2,0),
-         R(1,0) - R(0,1);
+        R(0,2) - R(2,0),
+        R(1,0) - R(0,1);
 
     u /= (2 * std::sin(theta));
 
@@ -123,7 +125,7 @@ std::vector<double> Pose_Trans::matrixToPose(const Eigen::Matrix4d& T)
 
 
 // The finished pose_trans function where the inputs are the reference frame(a) and the offeset pose(b)(the transform relative to a)
-std::vector<double> Pose_Trans::pose_trans(const std::vector<double>& a, const std::vector<double>& b)
+std::vector<double> Kinematics::pose_trans(const std::vector<double>& a, const std::vector<double>& b)
 {
     Eigen::Matrix4d T1 = poseToMatrix(a);
     Eigen::Matrix4d T2 = poseToMatrix(b);
@@ -134,34 +136,7 @@ std::vector<double> Pose_Trans::pose_trans(const std::vector<double>& a, const s
 }
 
 
-void Pose_Trans::move_to_work_start(){
-    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-    rtde_control.moveJ({1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045}, 0.5, 0.3);
-}
-
-
-//also works now
-void ain() {
-    // Control robot
-    ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
-    Pose_Trans pt;
-
-    // The robot has a 30 degree offset
-    std::vector<double> base_correction = {0, 0, 0, 0, 0, 0.5236};
-    std::vector<double> xyz_frame = {0.227425, -0.283882, 0.179427, -1.77164, -2.5876, -0.0029743};
-    std::vector<double> corrected_xyz_frame = pt.pose_trans(xyz_frame, base_correction);
-    std::vector<double> work_start = {1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045};
-    std::vector<double> cube_approach_point = {0.000942241, -0.38335, 0.15344488, -1.74705, -2.58713, -0.0208294};
-
-    ur_rtde::Path path;
-
-    double speed = 0.2;
-    double acceleration = 0.1;
-    double blend = 0.05;
-
-    path.addEntry(pt.makeMoveL_TCP(xyz_frame, speed, acceleration, blend));
-    path.addEntry(pt.makeMoveL_TCP(cube_approach_point, speed, acceleration, blend));
-
-    rtde_control.moveL(xyz_frame, speed, acceleration);
-
-}
+// void Pose_Trans::move_to_work_start(){
+//     ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
+//     rtde_control.moveJ({1.95257, -1.69021, 2.28666, -2.14271, -1.57025, 1.57045}, 0.5, 0.3);
+// }
