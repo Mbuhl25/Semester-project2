@@ -1,12 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <thread>
 
 #include <min2phase/min2phase.h>
 #include <min2phase/tools.h>
 
 #include "IndernetForChads.h"
-#include "Algorithm.h"
+#include "ManipolationOfRing.h"
 #include "Color_Detection.h"
 
 int main() {

@@ -1,9 +1,11 @@
 // Include the correct header for the control interface:
-#include <ur_rtde/rtde_control_interface.h>
-#include <ur_rtde/rtde_receive_interface.h>
 #include <iostream>
 #include <string.h>
 #include <Eigen/Dense>
+
+#include <ur_rtde/rtde_control_interface.h>
+#include <ur_rtde/rtde_receive_interface.h>
+
 #include "KinematicsMath.h"
 
 Kinematics::Kinematics() {}
