@@ -10,6 +10,7 @@
 #include "IndernetForChads.h"
 #include "ManipolationOfRing.h"
 #include "Color_Detection.h"
+#include "Gripper.h"
 
 int main() {
     std::cout << "Program started" << std::endl;
@@ -33,12 +34,17 @@ int main() {
     // BEVÆG GRIPPEREN NED TIL TERNINGEN
 
     // GRIB FAST MED GRIPPEREN
+    // gripper.gripperOpen();
+    // gripper.gripperClose();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST og blå side udad
     
     //std::string sideY = cube_object.scan_one_side("Y");
 
     // Flyt tilbage
+
+    gripperConnection.gripperOpen();
+    gripperConnection.gripperClose();
 
     // BEVÆG GRIPPEREN OP TIL KASSEN MED ORANGE SIDE ØVERST
 

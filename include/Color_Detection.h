@@ -49,6 +49,9 @@ private:
 
     std::vector<cv::Scalar> lowers;
     std::vector<cv::Scalar> uppers;
+
+    std::vector<cv::Vec3b> hsv_values;
+
 };
 
 #endif

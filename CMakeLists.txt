@@ -16,6 +16,7 @@ add_executable(CVProject
     #src/call_position.cpp
     src/pose_trans.cpp
     src/ManipolationOfRing.cpp
+    src/Color_Detection.cpp
     src/main.cpp
 )
 

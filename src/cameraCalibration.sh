@@ -16,7 +16,7 @@ v4l2-ctl -d "$DEVICE" --set-ctrl=auto_exposure=1
 v4l2-ctl -d "$DEVICE" --set-ctrl=exposure_dynamic_framerate=0
 
 # Set manual exposure (only works AFTER auto_exposure=1)
-v4l2-ctl -d "$DEVICE" --set-ctrl=exposure_time_absolute=667
+v4l2-ctl -d "$DEVICE" --set-ctrl=exposure_time_absolute=672
 
 
 # ------------------------
@@ -27,12 +27,12 @@ v4l2-ctl -d "$DEVICE" --set-ctrl=exposure_time_absolute=667
 v4l2-ctl -d "$DEVICE" --set-ctrl=white_balance_automatic=0
 
 # Manual white balance (Kelvin)
-v4l2-ctl -d "$DEVICE" --set-ctrl=white_balance_temperature=6500
+v4l2-ctl -d "$DEVICE" --set-ctrl=white_balance_temperature=4000
 
 # Image controls
-v4l2-ctl -d "$DEVICE" --set-ctrl=brightness=170
-v4l2-ctl -d "$DEVICE" --set-ctrl=contrast=35
-v4l2-ctl -d "$DEVICE" --set-ctrl=saturation=45
+v4l2-ctl -d "$DEVICE" --set-ctrl=brightness=100
+v4l2-ctl -d "$DEVICE" --set-ctrl=contrast=40
+v4l2-ctl -d "$DEVICE" --set-ctrl=saturation=35
 v4l2-ctl -d "$DEVICE" --set-ctrl=sharpness=24
 
 
@@ -44,7 +44,7 @@ v4l2-ctl -d "$DEVICE" --set-ctrl=power_line_frequency=1
 
 # Disable backlight compensation
 v4l2-ctl -d "$DEVICE" --set-ctrl=backlight_compensation=0
-
+    
 
 # ------------------------
 # DONE
