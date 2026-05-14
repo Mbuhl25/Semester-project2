@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include <pylon/PylonIncludes.h>
 
 class Color_Detection {
 public:
@@ -20,6 +21,9 @@ public:
     void print_hsv_values();
     void print_side(std::string color);
     void print_cube();
+
+    void grabFrame();
+    void Camera_stop();
 private:
     cv::Mat frame;
     cv::Mat hsv;
@@ -51,6 +55,11 @@ private:
     std::vector<cv::Scalar> uppers;
 
     std::vector<cv::Vec3b> hsv_values;
+
+    Pylon::CInstantCamera camera;
+    Pylon::CImageFormatConverter converter;
+    Pylon::CPylonImage pylonImage;
+    Pylon::CGrabResultPtr ptrGrabResult;
 
 };
 

@@ -4,13 +4,15 @@ project(CVProject)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Find OpenCV
+# -------------------------
+# Find packages
+# -------------------------
 find_package(OpenCV REQUIRED)
-
-# Find ur_rtde
 find_package(ur_rtde REQUIRED)
 
-# Main executable
+# -------------------------
+# Executable
+# -------------------------
 add_executable(CVProject
     src/FromVectorToRobot.cpp
     src/ManipolationOfRing.cpp
@@ -19,12 +21,49 @@ add_executable(CVProject
     src/main.cpp
 )
 
-
-
-# Include directories
+# -------------------------
+# External libraries
+# -------------------------
 add_subdirectory(external/min2phaseCXX)
-target_include_directories(CVProject PRIVATE ${CMAKE_SOURCE_DIR}/external/min2phaseCXX/include)
-target_link_libraries(CVProject PRIVATE ${OpenCV_LIBS} min2phase ur_rtde::rtde)
 
-target_include_directories(CVProject PUBLIC include)
-target_include_directories(CVProject PRIVATE ${CMAKE_SOURCE_DIR}/RTDE_controls/includes/eigen-3.4.1)
+# -------------------------
+# Include directories
+# -------------------------
+target_include_directories(CVProject
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/min2phaseCXX/include
+    ${CMAKE_SOURCE_DIR}/RTDE_controls/includes/eigen-3.4.1
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+# -------------------------
+# Find Pylon
+# -------------------------
+execute_process(
+    COMMAND /home/mbbu/Downloads/pylon-26.04.1_linux-x86_64_setup/bin/pylon-config --cflags
+    OUTPUT_VARIABLE PYLON_CFLAGS
+)
+
+execute_process(
+    COMMAND /home/mbbu/Downloads/pylon-26.04.1_linux-x86_64_setup/bin/pylon-config --libs
+    OUTPUT_VARIABLE PYLON_LIBS
+)
+
+string(STRIP "${PYLON_CFLAGS}" PYLON_CFLAGS)
+string(STRIP "${PYLON_LIBS}" PYLON_LIBS)
+
+separate_arguments(PYLON_CFLAGS_LIST UNIX_COMMAND "${PYLON_CFLAGS}")
+separate_arguments(PYLON_LIBS_LIST UNIX_COMMAND "${PYLON_LIBS}")
+
+target_compile_options(CVProject PRIVATE ${PYLON_CFLAGS_LIST})
+
+# -------------------------
+# Link libraries
+# -------------------------
+target_link_libraries(CVProject
+    PRIVATE
+    ${OpenCV_LIBS}
+    ${PYLON_LIBS_LIST}
+    min2phase
+    ur_rtde::rtde
+)
