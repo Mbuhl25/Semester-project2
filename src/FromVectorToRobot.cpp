@@ -101,7 +101,7 @@ void FromVectorToRobot::MoveUPrime(){
 }
 
 
-void FromVectorToRobot::MoveR(){
+void FromVectorToRobot::MoveRPrime(){
 
     move_perpendicular_to_work_start();
     move_perpendicular_grip_point();
@@ -118,7 +118,7 @@ void FromVectorToRobot::MoveR(){
     rtde_control.moveL(get_free_from_cube, speed, acceleration);
 }
 
-void FromVectorToRobot::MoveRPrime(){
+void FromVectorToRobot::MoveR(){
 
 
     move_perpendicular_to_work_start();
@@ -182,7 +182,7 @@ void FromVectorToRobot::MoveLPrime(){
 
 
 
-void FromVectorToRobot::MoveF(){
+void FromVectorToRobot::MoveFPrime(){
     move_parrallel_to_work_start();
     move_parrallel_grip_point();
     
@@ -198,7 +198,7 @@ void FromVectorToRobot::MoveF(){
     rtde_control.moveL(get_free_from_cube, speed, acceleration);
 }
 
-void FromVectorToRobot::MoveFPrime(){
+void FromVectorToRobot::MoveF(){
     move_parrallel_to_work_start();
     move_parrallel_grip_point();
     
@@ -220,7 +220,7 @@ void FromVectorToRobot::MoveFPrime(){
 
 
 
-void FromVectorToRobot::MoveB(){
+void FromVectorToRobot::MoveBPrime(){
     move_parrallel_to_work_start();
     move_parrallel_grip_point();
     
@@ -236,7 +236,7 @@ void FromVectorToRobot::MoveB(){
     rtde_control.moveL(get_free_from_cube, speed, acceleration);
 }
 
-void FromVectorToRobot::MoveBPrime(){
+void FromVectorToRobot::MoveB(){
     move_parrallel_to_work_start();
     move_parrallel_grip_point();
 
