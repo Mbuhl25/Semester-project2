@@ -6,9 +6,8 @@
 #include <min2phase/tools.h>
 
 #include "IndernetForChads.h"
-#include "Algorithm.h"
+#include "ManipulationOfRing.h"
 #include "Color_Detection.h"
-#include "Gripper.h"
 
 int main() {
     std::cout << "Program started" << std::endl;

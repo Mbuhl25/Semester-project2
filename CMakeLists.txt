@@ -16,7 +16,8 @@ add_executable(CVProject
     src/KinematicsMath.cpp
     src/ManipolationOfRing.cpp
     src/Color_Detection.cpp
-    #src/main.cpp
+    src/main.cpp
+    #src/call_position.cpp
 )
 
 

@@ -13,12 +13,12 @@
 
 GripperConnection gripper;
 Kinematics kinematics;
+// Connect to robot
+ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
 
 // Global waypoints
-std::vector<double> grip_point = {0.22657, -0.285007, 0.0422215, 0.620214, -3.07384, 0};
-std::vector<double> adjust_to_cube = {0.007, 0.0025, 0, 0, 0, 0};
 std::vector<double> winkelright = {-0.01, 0.0067, 0, 0, 0, 1.57};
-std::vector<double> parrallel_correct_grip_point = kinematics.pose_trans(grip_point, adjust_to_cube);
+std::vector<double> parrallel_correct_grip_point = {0.228327, -0.284797, 0.0367402, -0.63357, 3.06338, -0.00483968};
 std::vector<double> perpendicular_correct_grip_point = {0.225974, -0.281095, 0.0379604, -1.69162, -2.61414, 0.00921666};
 
 
@@ -182,6 +182,15 @@ void FromVectorToRobot::MoveLPrime(){
 
 
 void FromVectorToRobot::MoveF(){
+ 
+    move_parrallel_to_work_start();
+    move_parrallel_grip_point();
+    
+    std::vector<double> Move_To_Minusx = {0, -0.02, 0, 0, 0, 0};
+
+    std::vector<double> Move_To_Front = kinematics.pose_trans(parrallel_correct_grip_point, Move_To_Minusx);
+
+    rtde_control.moveL(Move_To_Front, speed, acceleration);
 
 }
 
@@ -192,6 +201,11 @@ void FromVectorToRobot::MoveFPrime(){
 
 
 void FromVectorToRobot::MoveB(){
+
+    move_parrallel_to_work_start();
+    move_parrallel_grip_point();
+
+    std::vector<double> Move_To_Back = {0.02, 0, 0, 0, 0, 0};
 
 }
 
