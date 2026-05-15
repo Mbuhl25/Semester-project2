@@ -17,8 +17,9 @@ Kinematics kinematics;
 ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
 
 // Global waypoints
-std::vector<double> winkelright = {-0.01, 0.0067, 0, 0, 0, 1.57};
-std::vector<double> parrallel_correct_grip_point = {0.228327, -0.284797, 0.0367402, -0.63357, 3.06338, -0.00483968};
+std::vector<double> grip_point = {0.22657, -0.285007, 0.0422215, 0.620214, -3.07384, 0};
+std::vector<double> adjust_to_cube = {0.0015, 0.0025, 0, 0, 0, 0};
+std::vector<double> parrallel_correct_grip_point = PT.pose_trans(grip_point, adjust_to_cube);
 std::vector<double> perpendicular_correct_grip_point = {0.225974, -0.281095, 0.0379604, -1.69162, -2.61414, 0.00921666};
 
 
@@ -54,18 +55,17 @@ void FromVectorToRobot::MoveU(){
     std::vector<double> turn_U = kinematics.pose_trans(parrallel_correct_grip_point, ninety_deg_z);
     std::vector<double> upwards = kinematics.pose_trans(parrallel_correct_grip_point, move_up_10);
 
-    gripper.gripperOpen();
+    gripper.gripperClose();
 
     // Moves
     rtde_control.moveL(turn_U, speed, acceleration);
-    gripper.gripperOpen();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    gripper.gripperOpen();
 
     rtde_control.moveL(upwards, speed, acceleration);
     
-
+    
 }
 
 void FromVectorToRobot::MoveUPrime(){
@@ -182,20 +182,39 @@ void FromVectorToRobot::MoveLPrime(){
 
 
 void FromVectorToRobot::MoveF(){
- 
     move_parrallel_to_work_start();
     move_parrallel_grip_point();
     
-    std::vector<double> Move_To_Minusx = {0, -0.02, 0, 0, 0, 0};
+    std::vector<double> move_2_cm_front = {0, -0.02, 0, 0, 0, 0};
+    std::vector<double> turned_f = {0.220367, -0.308934, 0.0218571, -0.284928, 1.56545, 0.323405};
+    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
 
-    std::vector<double> Move_To_Front = kinematics.pose_trans(parrallel_correct_grip_point, Move_To_Minusx);
+    std::vector<double> move_to_front = PT.pose_trans(parrallel_correct_grip_point, move_2_cm_front);
+    std::vector<double> get_free_from_cube = PT.pose_trans(turned_f, twenty_cm_back_z);
 
-    rtde_control.moveL(Move_To_Front, speed, acceleration);
-
+    rtde_control.moveL(move_to_front, speed, acceleration);
+    rtde_control.moveL(turned_f, speed, acceleration);
+    rtde_control.moveL(get_free_from_cube, speed, acceleration);
 }
 
 void FromVectorToRobot::MoveFPrime(){
+    move_parrallel_to_work_start();
+    move_parrallel_grip_point();
+    
+    std::vector<double> move_2_cm_front = {0, -0.02, 0, 0, 0, 0};
+    std::vector<double> move_2_cm_front_high = {0, -0.02, -0.1, 0, 0, 0};
+    std::vector<double> turned_f = {0.220367, -0.308934, 0.0218571, -0.284928, 1.56645, 0.323405};
+    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
 
+    std::vector<double> move_to_front = PT.pose_trans(parrallel_correct_grip_point, move_2_cm_front);
+    std::vector<double> move_to_front_high = PT.pose_trans(parrallel_correct_grip_point, move_2_cm_front_high);
+    std::vector<double> get_free_from_cube = PT.pose_trans(turned_f, twenty_cm_back_z);
+
+    rtde_control.moveL(move_to_front_high, speed, acceleration);
+    rtde_control.moveL(get_free_from_cube, speed, acceleration);
+    rtde_control.moveL(turned_f, speed, acceleration);
+    rtde_control.moveL(move_to_front, speed, acceleration);
+    
 }
 
 
@@ -210,5 +229,17 @@ void FromVectorToRobot::MoveB(){
 }
 
 void FromVectorToRobot::MoveBPrime(){
+
+}
+
+
+
+int main(){
+    gripper.connect_to_esp32();
+
+    FromVectorToRobot move;
+    
+    move.MoveFPrime();
+
 
 }
