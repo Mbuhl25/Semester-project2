@@ -19,6 +19,7 @@ add_executable(CVProject
     src/Color_Detection.cpp
     src/KinematicsMath.cpp
     src/main.cpp
+    src/CameraCalibrate.cpp
 )
 
 # -------------------------

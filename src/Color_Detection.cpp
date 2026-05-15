@@ -5,20 +5,12 @@ Color_Detection::Color_Detection() {} // constructor to make the object
 
 Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
     
-    // Initialize Pylon Basler kamera
-    Pylon::PylonInitialize();
-
-    camera.Attach(Pylon::CTlFactory::GetInstance().CreateFirstDevice());
-
-    camera.StartGrabbing(Pylon::GrabStrategy_LatestImageOnly);
-
-    converter.OutputPixelFormat = Pylon::PixelType_BGR8packed;
-
-    grabFrame();
+    camera.InitializeCam();
+    frame = camera.grabFrame();
 
     int midt_x = frame.cols / 2;
     int midt_y = frame.rows / 2;
-    int afstand = 120;
+    int afstand = 270;
 
     int top_left_x = midt_x - afstand;
     int top_left_y = midt_y - afstand;
@@ -172,7 +164,7 @@ std::string Color_Detection::get_color_from_5_points(cv::Mat hsv, int x, int y, 
 
 std::string Color_Detection::getOneSide(){
     // Returns 9 letter sequence for one side as a string
-    grabFrame();
+    frame = camera.grabFrame();
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     std::string oneSideLetters = "";
     for (int i = 0; i < points.size(); ++i){
@@ -255,7 +247,7 @@ void Color_Detection::align_cube(){
     // Create the dots on the screen
     // And wait for keypress
     while (true) {
-        grabFrame();
+        frame = camera.grabFrame();
         for (int i = 0; i < points.size(); ++i){
             cv::circle(frame, points[i], 3, cv::Scalar(0, 255, 0), -1);
         }
@@ -305,7 +297,7 @@ std::string Color_Detection::rename_colors_to_orientations(std::string input){
 
 
 void Color_Detection::print_hsv_values(){
-    grabFrame();
+    frame = camera.grabFrame();
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     int offset = 3;
 
@@ -359,36 +351,9 @@ void Color_Detection::print_cube(){
 
 }
 
-// Åben Kamera
-void Color_Detection::grabFrame()
-{
-    camera.RetrieveResult(
-        5000,
-        ptrGrabResult,
-        Pylon::TimeoutHandling_ThrowException
-    );
-
-    if (ptrGrabResult->GrabSucceeded())
-    {
-        converter.Convert(pylonImage, ptrGrabResult);
-
-        frame = cv::Mat(
-            ptrGrabResult->GetHeight(),
-            ptrGrabResult->GetWidth(),
-            CV_8UC3,
-            (uint8_t*)pylonImage.GetBuffer()
-        ).clone();
-    }
-}
-
-void Color_Detection::Camera_stop()
-{
-    camera.StopGrabbing();
-    camera.Close();
-    Pylon::PylonTerminate();
-}
-
 int main () {
-    Color_Detection cube_object("Lucas", 4);
+    Color_Detection cube_object("Lucas", 3);
+    cv::namedWindow("Frame", cv::WINDOW_NORMAL);
+    cv::resizeWindow("Frame", 640, 480);
     cube_object.scan_whole_cube();
 }
