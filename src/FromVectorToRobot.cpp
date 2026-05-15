@@ -101,17 +101,6 @@ void FromVectorToRobot::MoveUPrime(){
 }
 
 
-
-void FromVectorToRobot::MoveD(){
-    
-}
-
-void FromVectorToRobot::MoveDPrime(){
-
-}
-
-
-
 void FromVectorToRobot::MoveR(){
 
     move_perpendicular_to_work_start();
@@ -232,13 +221,47 @@ void FromVectorToRobot::MoveFPrime(){
 
 
 void FromVectorToRobot::MoveB(){
+    move_parrallel_to_work_start();
+    move_parrallel_grip_point();
+    
+    std::vector<double> move_2_cm_back = {0, 0.02, 0, 0, 0, 0};
+    std::vector<double> turned_b = {0.205189, -0.273622, 0.0223077, -0.259987, 1.60798, 0.300775};
+    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
 
+    std::vector<double> move_to_back = PT.pose_trans(parrallel_correct_grip_point, move_2_cm_back);
+    std::vector<double> get_free_from_cube = PT.pose_trans(turned_b, twenty_cm_back_z);
+
+    rtde_control.moveL(move_to_back, speed, acceleration);
+    rtde_control.moveL(turned_b, speed, acceleration);
+    rtde_control.moveL(get_free_from_cube, speed, acceleration);
 }
 
 void FromVectorToRobot::MoveBPrime(){
+    move_parrallel_to_work_start();
+    move_parrallel_grip_point();
 
+    std::vector<double> move_2_cm_back = {0, 0.02, 0, 0, 0, 0};
+    std::vector<double> move_2_cm_back_high = {0, 0.02, -0.1, 0, 0, 0};
+    std::vector<double> turned_b = {0.205189, -0.273622, 0.0223077, -0.259987, 1.65798, 0.300775};
+    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
+
+    std::vector<double> move_to_back = PT.pose_trans(parrallel_correct_grip_point, move_2_cm_back);
+    std::vector<double> move_to_back_high = PT.pose_trans(parrallel_correct_grip_point, move_2_cm_back_high);
+    std::vector<double> get_free_from_cube = PT.pose_trans(turned_b, twenty_cm_back_z);
+
+    rtde_control.moveL(move_to_back_high, speed, acceleration);
+    rtde_control.moveL(get_free_from_cube, speed, acceleration);
+    rtde_control.moveL(turned_b, speed, acceleration);
+    rtde_control.moveL(move_to_back, speed, acceleration);
 }
 
+void FromVectorToRobot::MoveD(){
+    
+}
+
+void FromVectorToRobot::MoveDPrime(){
+
+}
 
 
 int main(){
@@ -246,7 +269,7 @@ int main(){
 
     FromVectorToRobot move;
     
-    move.MoveFPrime();
+    move.MoveBPrime();
 
 
 }
