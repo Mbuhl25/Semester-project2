@@ -11,21 +11,57 @@
 #include "Color_Detection.h"
 
 
+void doThisAlgortihm(std::vector<std::string> solution) {
+    FromVectorToRobot robotMoves;
+    for (int i = 0; i < solution.size(); ++i) {
+        std::string move = solution[i];
+
+        if (move[0] == '(' || move[0] == '.') {
+            continue;
+        }
+
+        std::cout << "now time to move: " << move << std::endl;
+
+        if      (move == "U")   {robotMoves.MoveU();}
+        else if (move == "U'")  {robotMoves.MoveUPrime();}
+        else if (move == "U2")  {robotMoves.MoveU(); robotMoves.MoveU();}
+        else if (move == "D")   {robotMoves.MoveD();}
+        else if (move == "D'")  {robotMoves.MoveDPrime();}
+        else if (move == "D2")  {robotMoves.MoveD(); robotMoves.MoveD();}
+        else if (move == "R")   {robotMoves.MoveR();}
+        else if (move == "R'")  {robotMoves.MoveRPrime();}
+        else if (move == "R2")  {robotMoves.MoveR(); robotMoves.MoveR();}
+        else if (move == "L")   {robotMoves.MoveL();}
+        else if (move == "L'")  {robotMoves.MoveLPrime();}
+        else if (move == "L2")  {robotMoves.MoveL(); robotMoves.MoveL();}
+        else if (move == "F")   {robotMoves.MoveF();}
+        else if (move == "F'")  {robotMoves.MoveFPrime();}
+        else if (move == "F2")  {robotMoves.MoveF(); robotMoves.MoveF();}
+        else if (move == "B")   {robotMoves.MoveB();}
+        else if (move == "B'")  {robotMoves.MoveBPrime();}
+        else if (move == "B2")  {robotMoves.MoveB(); robotMoves.MoveB();}
+    }
+}
+
 int main() {
     // GripperConnection gripper;
     Algorithm algorithmProcessor;
     Color_Detection cube_object("Lucas", 3);
     FromVectorToRobot robotMoves;
 
-    std::cout << "Number 1" << std::endl;
+    
+
+    // std::vector<std::string> testAlgorithm{"F", "R", "U", "D", "L", "B", "F'", "R'", "U'", "D'", "L'", "B'", "F2", "R2", "U2", "D2", "L2", "B2"};
+    // doThisAlgortihm(testAlgorithm);
 
     cv::namedWindow("Frame", cv::WINDOW_NORMAL);
-    std::cout << "Number 2" << std::endl;
     cv::resizeWindow("Frame", 640, 480);
-    std::cout << "Number 3" << std::endl;
+
+    robotMoves.testFunction();
 
     // BEVÆG GRIPPEREN NED TIL TERNINGEN
     // BEVÆG GRIPPEREN OP TIL KASSEN MED GUL SIDE ØVERST og blå side udad
+
     
     std::string sideY = cube_object.scan_one_side("Y");
 
@@ -51,7 +87,7 @@ int main() {
     std::string sideB = cube_object.scan_one_side("B");
 
     std::string cubeColorPlacements = sideY + sideO + sideG + sideW + sideR + sideB; // get the string for the positions of the cube, a solved cube has this string: "YYYYYYYYYOOOOOOOOOGGGGGGGGGWWWWWWWWWRRRRRRRRRBBBBBBBBB"
-    
+    std::cout << cubeColorPlacements << std::endl;
 
     min2phase::init();  // use min2phase to generate the solution for the rubix's cube
     std::string algorithmToSolve = min2phase::solve(cubeColorPlacements, 21, 1000000, 0, min2phase::APPEND_LENGTH | min2phase::USE_SEPARATOR, nullptr);

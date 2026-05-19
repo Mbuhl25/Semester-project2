@@ -12,6 +12,8 @@ public:
     void turnRingSides(std::vector<double>, bool, std::string);
 
     std::string VecMove(std::vector<std::string> moves);
+    void getPosition();
+    void testFunction();
 
     void MoveU();
     void MoveUPrime();
@@ -32,8 +34,8 @@ public:
     void MoveBPrime();
 
 private:
-    double speed = 0.5;
-    double acceleration = 0.5;
+    double speed = 1;
+    double acceleration = 1;
 };
 
 #endif

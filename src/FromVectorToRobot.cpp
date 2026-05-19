@@ -247,7 +247,7 @@ void FromVectorToRobot::MoveDPrime(){
     rtde_control.moveL(move_to_side_away_R, speed, acceleration);
 }
 
-void getPosition() {
+void FromVectorToRobot::getPosition() {
     // Get current position
     ur_rtde::RTDEReceiveInterface rtde_receive("192.168.1.11");
     std::vector<double> linear_positions_cup = rtde_receive.getActualTCPPose();
@@ -255,4 +255,14 @@ void getPosition() {
     for (double q : linear_positions_cup) {
         std::cout << q << ", ";
     }
+}
+
+void FromVectorToRobot::testFunction() {
+    std::vector<double> back_15cm_z = {0, 0, -0.15, 0, 0, 0};
+
+    std::vector<double> cubeScanPoint = {-0.0740231, -0.707492, 0.530124, 0.0, 0.0, 0.430287}; // pose
+    std::vector<double> cubeScanPoint_away = PT.pose_trans(cubeScanPoint, back_15cm_z); // pose
+
+    rtde_control.moveL(cubeScanPoint_away, 0.1, 0.1);
+    rtde_control.moveL(cubeScanPoint, 0.1, 0.1);
 }
