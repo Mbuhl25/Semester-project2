@@ -1,15 +1,17 @@
 #include <iostream>
 #include "Color_Detection.h"
+#include <chrono>
 
 Color_Detection::Color_Detection() {} // constructor to make the object
 
 Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
-    cap = cv::VideoCapture(videoPort);
-    cap >> frame;
+    
+    camera.InitializeCam();
+    frame = camera.grabFrame();
 
     int midt_x = frame.cols / 2;
     int midt_y = frame.rows / 2;
-    int afstand = 120;
+    int afstand = 270;
 
     int top_left_x = midt_x - afstand;
     int top_left_y = midt_y - afstand;
@@ -29,7 +31,7 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
     int top_rigtht_x = midt_x + afstand;
     int top_rigtht_y = midt_y - afstand;
 
-    int midt_right_x = midt_x + afstand;
+    int midt_right_x = midt_x + afstand;// YELLOW
     int midt_right_y = midt_y;
 
     int bot_right_x = midt_x + afstand;
@@ -47,23 +49,24 @@ Color_Detection::Color_Detection(std::string cubeType, int videoPort) {
 
     if (cubeType == "Lucas") {
         // YELLOW
-        yellow_lower = cv::Scalar(24, 59, 100);
-        yellow_upper = cv::Scalar(33, 98, 255);
+        yellow_lower = cv::Scalar(12, 200, 0);
+        yellow_upper = cv::Scalar(27, 258, 255);
         // ORANGE
-        orange_lower = cv::Scalar(15, 213, 100);
-        orange_upper = cv::Scalar(26, 258, 255);
+        orange_lower = cv::Scalar(1, 200, 0);
+        orange_upper = cv::Scalar(11, 258, 255);
         // GREEN
-        green_lower = cv::Scalar(35, 151, 100);
-        green_upper = cv::Scalar(45, 189, 255);
+        green_lower = cv::Scalar(28, 200, 0);
+        green_upper = cv::Scalar(50, 258, 255);
         // WHITE
-        white_lower = cv::Scalar(-3, -3, 100);
-        white_upper = cv::Scalar(93, 16, 255);
+        white_lower = cv::Scalar(0, 28, 0);
+        white_upper = cv::Scalar(177, 100, 255);
         // RED / PINK
-        red_lower = cv::Scalar(147, 79, 100);
-        red_upper = cv::Scalar(164, 116, 255);
+        red_lower = cv::Scalar(162, 242, 0);
+        red_upper = cv::Scalar(172, 258, 255);
         // BLUE
-        blue_lower = cv::Scalar(87, 95, 100);
-        blue_upper = cv::Scalar(103, 129, 255);
+        blue_lower = cv::Scalar(99, 164, 0);
+        blue_upper = cv::Scalar(110, 234, 255);
+
     } else if (cubeType == "Mathi") {
         // YELLOW
         yellow_lower = cv::Scalar(22, 100, 120);
@@ -163,7 +166,7 @@ std::string Color_Detection::get_color_from_5_points(cv::Mat hsv, int x, int y, 
 
 std::string Color_Detection::getOneSide(){
     // Returns 9 letter sequence for one side as a string
-    cap >> frame;
+    frame = camera.grabFrame();
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     std::string oneSideLetters = "";
     for (int i = 0; i < points.size(); ++i){
@@ -178,7 +181,7 @@ std::string Color_Detection::scan_one_side(std::string color){
     bool fail = false;
     while (true) {
         std::cout<< "Du skal vise side: "<< color << std::endl;
-        align_cube();  
+        align_cube_countdown();  
         scanned = getOneSide();
         std::cout << scanned << std::endl;
         if (scanned[4] != color[0]){
@@ -246,7 +249,7 @@ void Color_Detection::align_cube(){
     // Create the dots on the screen
     // And wait for keypress
     while (true) {
-        cap >> frame;
+        frame = camera.grabFrame();
         for (int i = 0; i < points.size(); ++i){
             cv::circle(frame, points[i], 3, cv::Scalar(0, 255, 0), -1);
         }
@@ -261,6 +264,73 @@ void Color_Detection::align_cube(){
             print_hsv_values();
         }
 }
+}
+
+void Color_Detection::align_cube_countdown(){
+
+
+    auto start_time = std::chrono::steady_clock::now();
+    int countdown_seconds = 5;
+
+    while (true) {
+
+        frame = camera.grabFrame();
+
+        // Draw points
+        for (int i = 0; i < points.size(); ++i){
+            cv::circle(frame, points[i], 3, cv::Scalar(0, 255, 0), -1);
+        }
+
+        // Time calculation
+        auto current_time = std::chrono::steady_clock::now();
+
+        int elapsed =
+            std::chrono::duration_cast<std::chrono::seconds>(
+                current_time - start_time
+            ).count();
+
+        int remaining = countdown_seconds - elapsed;
+
+        // Show countdown text
+        if (remaining > 0) {
+
+            cv::putText(
+                frame,
+                "Scanning in: " + std::to_string(remaining),
+                cv::Point(50, 50),
+                cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
+
+        } else {
+
+            cv::putText(
+                frame,
+                "SCANNING...",
+                cv::Point(50, 50),
+                cv::FONT_HERSHEY_SIMPLEX,
+                1,
+                cv::Scalar(0, 255, 0),
+                2
+            );
+
+            cv::imshow("Frame", frame);
+
+            print_hsv_values();
+
+            break;
+        }
+
+        cv::imshow("Frame", frame);
+
+        char key = (char)cv::waitKey(1);
+
+        if (key == 'q' || key == 'Q') {
+            break;
+        }
+
+        if (key == 'p'){   
+            print_hsv_values();
+        }
+    }
 }
 
 std::string Color_Detection::rename_colors_to_orientations(std::string input){
@@ -296,7 +366,7 @@ std::string Color_Detection::rename_colors_to_orientations(std::string input){
 
 
 void Color_Detection::print_hsv_values(){
-    cap >> frame;
+    frame = camera.grabFrame();
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     int offset = 3;
 
@@ -349,3 +419,10 @@ void Color_Detection::print_cube(){
     std::cout<< rename_colors_to_orientations(scan_whole_cube())<< std::endl;
 
 }
+
+// int main () {
+//     Color_Detection cube_object("Lucas", 3);
+//     cv::namedWindow("Frame", cv::WINDOW_NORMAL);
+//     cv::resizeWindow("Frame", 640, 480);
+//     cube_object.scan_whole_cube();
+// }

@@ -2,7 +2,9 @@
 #define COLOR_DETECTION_H
 #include <string>
 #include <vector>
+#include <pylon/PylonIncludes.h>
 #include <opencv2/opencv.hpp>
+#include "CameraCalibrate.h"
 
 class Color_Detection {
 public:
@@ -20,6 +22,8 @@ public:
     void print_hsv_values();
     void print_side(std::string color);
     void print_cube();
+    void align_cube_countdown();
+    
 private:
     cv::Mat frame;
     cv::Mat hsv;
@@ -51,6 +55,9 @@ private:
     std::vector<cv::Scalar> uppers;
 
     std::vector<cv::Vec3b> hsv_values;
+
+    CameraCalibrate camera;
+
 
 };
 
