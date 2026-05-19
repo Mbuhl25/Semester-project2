@@ -200,3 +200,13 @@ void FromVectorToRobot::MoveD(){
 void FromVectorToRobot::MoveDPrime(){
 
 }
+
+void getPosition() {
+    // Get current position
+    ur_rtde::RTDEReceiveInterface rtde_receive("192.168.1.11");
+    std::vector<double> linear_positions_cup = rtde_receive.getActualTCPPose();
+
+    for (double q : linear_positions_cup) {
+        std::cout << q << ", ";
+    }
+}

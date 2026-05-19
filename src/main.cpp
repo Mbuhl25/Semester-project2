@@ -14,7 +14,7 @@
 
 int main() {
     
-    std::vector<std::string> algorithmToSolveInBoxVector{"F"};
+    std::vector<std::string> algorithmToSolveInBoxVector{"F", "R", "U2", "F'"};
 
     FromVectorToRobot RC;
 

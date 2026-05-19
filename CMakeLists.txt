@@ -13,11 +13,10 @@ find_package(ur_rtde REQUIRED)
 # Main executable
 add_executable(CVProject
     src/FromVectorToRobot.cpp
-    #src/call_position.cpp
-    src/pose_trans.cpp
     src/ManipolationOfRing.cpp
     src/Color_Detection.cpp
-    #src/main.cpp
+    src/KinematicsMath.cpp
+    src/main.cpp
 )
 
 
