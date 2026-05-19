@@ -12,27 +12,27 @@
 #include "IndernetForChads.h" 
 
 GripperConnection gripper;
-Kinematics kinematics;
+Kinematics PT;
 // Connect to robot
 ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
+ur_rtde::RTDEReceiveInterface rtde_receive("192.168.1.11");
 
 // Global waypoints
-std::vector<double> grip_point = {0.22657, -0.285007, 0.0422215, 0.620214, -3.07384, 0};
-std::vector<double> adjust_to_cube = {0.0015, 0.0025, 0, 0, 0, 0};
-std::vector<double> parrallel_correct_grip_point = kinematics.pose_trans(grip_point, adjust_to_cube);
-std::vector<double> perpendicular_correct_grip_point = {0.225974, -0.281095, 0.0379604, -1.69162, -2.61414, 0.00921666};
-
+std::vector<double> parrallel_to_work_start = {-4.34557, -1.88197, 2.12536, -1.8126, -1.57616, -0.0307754}; // joint angles
+std::vector<double> perpendicular_to_work_start = {-4.32317, -1.85988, 2.11749, -1.80833, -1.59106, 1.53886}; // joint angles
+std::vector<double> parrallel_correct_grip_point = {0.224218, -0.283284, 0.0422329, 0.620214, -3.07384, 0}; // pose
+std::vector<double> perpendicular_correct_grip_point = {0.225974, -0.281095, 0.0379604, -1.69162, -2.61414, 0.00921666}; // pose
 
 // Helper functions
-void move_parrallel_to_work_start() {
-rtde_control.moveJ({-4.35057, -1.88214, 2.16936, -1.85505, -1.57, 0.000107484}, 0.5, 0.3);
+void move_parrallel_to_work_start(){
+    rtde_control.moveJ(parrallel_to_work_start, 0.5, 0.3);
 }
 
-void move_perpendicular_to_work_start() {
-    rtde_control.moveJ({-4.35058, -1.88214, 2.16935, -1.85515, -1.56999, 1.57}, 0.5, 0.3);
+void move_perpendicular_to_work_start(){
+    rtde_control.moveJ(perpendicular_to_work_start, 0.5, 0.3);
 }
 
-void move_parrallel_grip_point() {
+void move_parrallel_grip_point(){
     rtde_control.moveL(parrallel_correct_grip_point, 0.5, 0.3);
 }
 
@@ -40,224 +40,163 @@ void move_perpendicular_grip_point() {
     rtde_control.moveL(perpendicular_correct_grip_point, 0.5, 0.3);
 }
 
+
+void FromVectorToRobot::turnRingSides(std::vector<double> offset, bool downFirst, std::string face) {
+    // Movements
+    std::vector<double> ninety_deg_y = {0, 0, 0, 0, 1.57, 0};
+    std::vector<double> back_10cm_z = {0, 0, -0.1, 0, 0, 0};
+    std::vector<double> forward_10cm_z = {0, 0, 0.1, 0, 0, 0};
+    std::vector<double> back_11cm_x = {-0.112, 0, 0, 0, 0, 0};
+
+
+    // Pose Transformations
+    std::vector<double> move_to_side;
+    if (face == "F" || face == "B") {
+        move_to_side = PT.pose_trans(parrallel_correct_grip_point, offset);
+    } else if (face == "R" || face == "L") {
+        move_to_side = PT.pose_trans(perpendicular_correct_grip_point, offset);
+    } else {
+        std::cout << "invalid face name" << std::endl;
+        exit;
+    }
+    std::vector<double> move_to_side_away = PT.pose_trans(move_to_side, back_10cm_z);
+    std::vector<double> move_to_side_away_90degree_y = PT.pose_trans(move_to_side_away, ninety_deg_y); // just a midway calculation
+    std::vector<double> move_to_side_halfway = PT.pose_trans(move_to_side_away_90degree_y, back_10cm_z); // just a midway calculation
+    std::vector<double> move_after_turn_away = PT.pose_trans(move_to_side_halfway , back_11cm_x);
+    std::vector<double> move_after_turn = PT.pose_trans(move_after_turn_away, forward_10cm_z);
+
+
+    // Move commands
+    if (downFirst) {
+        rtde_control.moveL(move_to_side_away, speed, acceleration);
+        rtde_control.moveL(move_after_turn_away, speed, acceleration);
+        rtde_control.moveL(move_after_turn, speed, acceleration);
+        // gripper.gripperClose();
+        rtde_control.moveL(move_to_side, speed, acceleration);
+        // gripper.gripperOpen();
+        rtde_control.moveL(move_to_side_away, speed, acceleration);
+    } else {
+        rtde_control.moveL(move_to_side_away, speed, acceleration);
+        rtde_control.moveL(move_to_side, speed, acceleration);
+        // gripper.gripperClose();
+        rtde_control.moveL(move_after_turn, speed, acceleration);
+        // gripper.gripperOpen();
+        rtde_control.moveL(move_after_turn_away, speed, acceleration);
+        rtde_control.moveL(move_to_side_away, speed, acceleration);
+    }
+}
+
+
 // Manipulation functions
 void FromVectorToRobot::MoveU(){
-    
-    // Back to Neutral Position
+    // Back to reference Position
     move_parrallel_to_work_start();
-    move_parrallel_grip_point();
 
     // Movements
     std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, 1.57};
-    std::vector<double> move_up_10 = {0, 0, -0.1, 0, 0, 1.57};
-
+    std::vector<double> back_10cm_z = {0, 0, -0.1, 0, 0, 0};
     // Pose transformations
-    std::vector<double> turn_U = kinematics.pose_trans(parrallel_correct_grip_point, ninety_deg_z);
-    std::vector<double> upwards = kinematics.pose_trans(parrallel_correct_grip_point, move_up_10);
+    std::vector<double> turn_U = PT.pose_trans(parrallel_correct_grip_point, ninety_deg_z);
+    std::vector<double> move_away = PT.pose_trans(turn_U, back_10cm_z);
 
-    gripper.gripperClose();
-
-    // Moves
+    // Move commands
+    // gripper.gripperClose();
+    rtde_control.moveL(parrallel_correct_grip_point, speed, acceleration);
     rtde_control.moveL(turn_U, speed, acceleration);
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    gripper.gripperOpen();
-
-    rtde_control.moveL(upwards, speed, acceleration);
-    
-    
+    // gripper.gripperOpen();
+    rtde_control.moveL(move_away, speed, acceleration);
 }
 
 void FromVectorToRobot::MoveUPrime(){
-
-    // Back to neutral position
+    // Back to reference Position
     move_parrallel_to_work_start();
-    move_parrallel_grip_point();
 
     // Movements
     std::vector<double> ninety_deg_z = {0, 0, 0, 0, 0, -1.57};
-    std::vector<double> move_up_10 = {0, 0, -0.1, 0, 0, -1.57};
-
-    // Pose Transformations
-    std::vector<double> turn_U = kinematics.pose_trans(parrallel_correct_grip_point, ninety_deg_z);
-    std::vector<double> upwards = kinematics.pose_trans(parrallel_correct_grip_point, move_up_10);
+    std::vector<double> back_10cm_z = {0, 0, -0.1, 0, 0, 0};
+    // Pose transformations
+    std::vector<double> turn_UPrime = PT.pose_trans(parrallel_correct_grip_point, ninety_deg_z);
+    std::vector<double> move_away = PT.pose_trans(turn_UPrime, back_10cm_z);
 
     // Move commands
-    rtde_control.moveL(turn_U, speed, acceleration);
-    rtde_control.moveL(upwards, speed, acceleration);
-    
+    // gripper.gripperClose();
+    rtde_control.moveL(parrallel_correct_grip_point, speed, acceleration);
+    rtde_control.moveL(turn_UPrime, speed, acceleration);
+    // gripper.gripperOpen();
+    rtde_control.moveL(move_away, speed, acceleration);
 }
-
-
-void FromVectorToRobot::MoveRPrime(){
-
-    move_perpendicular_to_work_start();
-    move_perpendicular_grip_point();
-    
-    std::vector<double> place_tcp_right = {0, -0.02, 0, 0, 0, 0};
-    std::vector<double> turned_r = {0.217449, -0.309183, 0.0347184, -0.840372, -1.4144, -0.956589};
-    std::vector<double> ten_cm_back_z = {0, 0, -0.1, 0, 0, 0};
-
-    std::vector<double> move_right_side = kinematics.pose_trans(perpendicular_correct_grip_point, place_tcp_right);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_r, ten_cm_back_z);
-
-    rtde_control.moveL(move_right_side, speed, acceleration);
-    rtde_control.moveL(turned_r, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
-}
-
-void FromVectorToRobot::MoveR(){
-
-
-    move_perpendicular_to_work_start();
-    move_perpendicular_grip_point();
-    
-    std::vector<double> place_tcp_right = {0, -0.02, 0, 0, 0, 0};
-    std::vector<double> turned_r = {0.217449, -0.309183, 0.0347184, -0.840372, -1.4144, -0.956589};
-
-    
-    std::vector<double> ten_cm_back_z = {0, 0, -0.1, 0, 0, 0};
-    std::vector<double> ten_cm_forwards_z = {0, 0, 0.1, 0, 0, 0};
-
-    std::vector<double> move_right_side = kinematics.pose_trans(perpendicular_correct_grip_point, place_tcp_right);
-    std::vector<double> move_right_side_high = kinematics.pose_trans(move_right_side, ten_cm_back_z);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_r, ten_cm_back_z);
-
-
-    rtde_control.moveL(move_right_side_high, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
-    rtde_control.moveL(turned_r, speed, acceleration);
-    rtde_control.moveL(move_right_side, speed, acceleration);
-
-}
-
-
 
 void FromVectorToRobot::MoveL(){
+    // Back to reference Position
     move_perpendicular_to_work_start();
-    move_perpendicular_grip_point();
 
-    std::vector<double> place_tcp_left = {0, 0.02, 0, 0, 0, 0};
-    std::vector<double> turned_l = {0.247648, -0.289841, 0.0320401, -0.840372, -1.4144, -0.956589};
-    std::vector<double> ten_cm_back_z = {0, 0, -0.1, 0, 0, 0};
-
-    std::vector<double> move_left_side = kinematics.pose_trans(perpendicular_correct_grip_point, place_tcp_left);
-    std::vector<double> move_left_side_high = kinematics.pose_trans(move_left_side, ten_cm_back_z);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_l, ten_cm_back_z);
-
-    rtde_control.moveL(move_left_side, speed, acceleration);
-    rtde_control.moveL(turned_l, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
+    std::vector<double> place_tcp_left = {0, -0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_left, false, "L");
 }
 
 void FromVectorToRobot::MoveLPrime(){
+    // Back to reference Position
     move_perpendicular_to_work_start();
-    move_perpendicular_grip_point();
 
-    std::vector<double> place_tcp_left = {0, 0.02, 0, 0, 0, 0};
-    std::vector<double> turned_l = {0.247648, -0.289841, 0.0320401, -0.840372, -1.4144, -0.956589};
-    std::vector<double> ten_cm_back_z = {0, 0, -0.1, 0, 0, 0};
-
-    std::vector<double> move_left_side = kinematics.pose_trans(perpendicular_correct_grip_point, place_tcp_left);
-    std::vector<double> move_left_side_high = kinematics.pose_trans(move_left_side, ten_cm_back_z);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_l, ten_cm_back_z);
-
-    rtde_control.moveL(move_left_side_high, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
-    rtde_control.moveL(turned_l, speed, acceleration);
-    rtde_control.moveL(move_left_side, speed, acceleration);
+    std::vector<double> place_tcp_left = {0, -0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_left, true, "L");
 }
 
+void FromVectorToRobot::MoveR(){
+    // Back to reference Position
+    move_perpendicular_to_work_start();
 
-
-void FromVectorToRobot::MoveFPrime(){
-    move_parrallel_to_work_start();
-    move_parrallel_grip_point();
-    
-    std::vector<double> move_2_cm_front = {0, -0.02, 0, 0, 0, 0};
-    std::vector<double> turned_f = {0.220367, -0.308934, 0.0218571, -0.284928, 1.56545, 0.323405};
-    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
-
-    std::vector<double> move_to_front = kinematics.pose_trans(parrallel_correct_grip_point, move_2_cm_front);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_f, twenty_cm_back_z);
-
-    rtde_control.moveL(move_to_front, speed, acceleration);
-    rtde_control.moveL(turned_f, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
+    std::vector<double> place_tcp_right = {0, 0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_right, true, "R");
 }
+
+void FromVectorToRobot::MoveRPrime(){
+    // Back to reference Position
+    move_perpendicular_to_work_start();
+
+    std::vector<double> place_tcp_right = {0, 0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_right, false, "R");
+}
+
 
 void FromVectorToRobot::MoveF(){
+    // Back to reference Position
     move_parrallel_to_work_start();
-    move_parrallel_grip_point();
-    
-    std::vector<double> move_2_cm_front = {0, -0.02, 0, 0, 0, 0};
-    std::vector<double> move_2_cm_front_high = {0, -0.02, -0.1, 0, 0, 0};
-    std::vector<double> turned_f = {0.220367, -0.308934, 0.0218571, -0.284928, 1.56645, 0.323405};
-    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
 
-    std::vector<double> move_to_front = kinematics.pose_trans(parrallel_correct_grip_point, move_2_cm_front);
-    std::vector<double> move_to_front_high = kinematics.pose_trans(parrallel_correct_grip_point, move_2_cm_front_high);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_f, twenty_cm_back_z);
-
-    rtde_control.moveL(move_to_front_high, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
-    rtde_control.moveL(turned_f, speed, acceleration);
-    rtde_control.moveL(move_to_front, speed, acceleration);
-    
+    std::vector<double> place_tcp_front = {0, -0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_front, false, "F");
 }
 
+void FromVectorToRobot::MoveFPrime(){
+    // Back to reference Position
+    move_parrallel_to_work_start();
+
+    std::vector<double> place_tcp_front = {0, -0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_front, true, "F");
+}
 
 
 void FromVectorToRobot::MoveBPrime(){
+    // Back to reference Position
     move_parrallel_to_work_start();
-    move_parrallel_grip_point();
-    
-    std::vector<double> move_2_cm_back = {0, 0.02, 0, 0, 0, 0};
-    std::vector<double> turned_b = {0.205189, -0.273622, 0.0223077, -0.259987, 1.60798, 0.300775};
-    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
 
-    std::vector<double> move_to_back = kinematics.pose_trans(parrallel_correct_grip_point, move_2_cm_back);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_b, twenty_cm_back_z);
-
-    rtde_control.moveL(move_to_back, speed, acceleration);
-    rtde_control.moveL(turned_b, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
+    std::vector<double> place_tcp_front = {0, 0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_front, false, "B");
 }
 
 void FromVectorToRobot::MoveB(){
+    // Back to reference Position
     move_parrallel_to_work_start();
-    move_parrallel_grip_point();
 
-    std::vector<double> move_2_cm_back = {0, 0.02, 0, 0, 0, 0};
-    std::vector<double> move_2_cm_back_high = {0, 0.02, -0.1, 0, 0, 0};
-    std::vector<double> turned_b = {0.205189, -0.273622, 0.0223077, -0.259987, 1.65798, 0.300775};
-    std::vector<double> twenty_cm_back_z = {0, 0, -0.2, 0, 0, 0};
-
-    std::vector<double> move_to_back = kinematics.pose_trans(parrallel_correct_grip_point, move_2_cm_back);
-    std::vector<double> move_to_back_high = kinematics.pose_trans(parrallel_correct_grip_point, move_2_cm_back_high);
-    std::vector<double> get_free_from_cube = kinematics.pose_trans(turned_b, twenty_cm_back_z);
-
-    rtde_control.moveL(move_to_back_high, speed, acceleration);
-    rtde_control.moveL(get_free_from_cube, speed, acceleration);
-    rtde_control.moveL(turned_b, speed, acceleration);
-    rtde_control.moveL(move_to_back, speed, acceleration);
+    std::vector<double> place_tcp_front = {0, 0.02, 0, 0, 0, 0};
+    turnRingSides(place_tcp_front, true, "B");
 }
+
 
 void FromVectorToRobot::MoveD(){
     
 }
 
 void FromVectorToRobot::MoveDPrime(){
-
-}
-
-
-int main(){
-    // gripper.connect_to_esp32();
-
-    FromVectorToRobot move;
-    
-    move.MoveBPrime();
-
 
 }

@@ -9,6 +9,10 @@ class FromVectorToRobot {
 public:
     FromVectorToRobot() {}
 
+    void turnRingSides(std::vector<double>, bool, std::string);
+
+    std::string VecMove(std::vector<std::string> moves);
+
     void MoveU();
     void MoveUPrime();
     void MoveU2();
