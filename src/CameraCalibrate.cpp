@@ -46,16 +46,17 @@ void CameraCalibrate::InitializeCam()
     GenApi::CEnumerationPtr(nodemap.GetNode("GainAuto"))->FromString("Off");
     GenApi::CEnumerationPtr(nodemap.GetNode("BalanceWhiteAuto"))->FromString("Off");
 
-    GenApi::CFloatPtr(nodemap.GetNode("ExposureTime"))->SetValue(70000.0);
+    GenApi::CFloatPtr(nodemap.GetNode("ExposureTime"))->SetValue(35000.0);
     GenApi::CFloatPtr(nodemap.GetNode("Gain"))->SetValue(0.0);
 
-    GenApi::CFloatPtr(nodemap.GetNode("Gamma"))->SetValue(1);
+    GenApi::CFloatPtr(nodemap.GetNode("Gamma"))->SetValue(1.5);
 
     GenApi::CEnumerationPtr(nodemap.GetNode("BalanceRatioSelector"))->FromString("Red");
     GenApi::CFloatPtr(nodemap.GetNode("BalanceRatio"))->SetValue(2);
 
     GenApi::CEnumerationPtr(nodemap.GetNode("BalanceRatioSelector"))->FromString("Blue");
     GenApi::CFloatPtr(nodemap.GetNode("BalanceRatio"))->SetValue(2);
+
 
 
 }

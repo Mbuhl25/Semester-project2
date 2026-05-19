@@ -22,6 +22,7 @@ public:
     void print_hsv_values();
     void print_side(std::string color);
     void print_cube();
+    void align_cube_countdown();
     
 private:
     cv::Mat frame;
