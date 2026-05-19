@@ -267,8 +267,6 @@ void Color_Detection::align_cube(){
 }
 
 void Color_Detection::align_cube_countdown(){
-
-
     auto start_time = std::chrono::steady_clock::now();
     int countdown_seconds = 5;
 
@@ -298,7 +296,11 @@ void Color_Detection::align_cube_countdown(){
                 frame,
                 "Scanning in: " + std::to_string(remaining),
                 cv::Point(50, 50),
-                cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
+                cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
+                1,
+                cv::Scalar(0, 0, 255),
+                2
+            );
 
         } else {
 

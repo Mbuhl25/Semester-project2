@@ -9,9 +9,9 @@
 
 #include "FromVectorToRobot.h"
 #include "KinematicsMath.h"
-#include "IndernetForChads.h" 
+// #include "IndernetForChads.h" 
 
-GripperConnection gripper;
+// GripperConnection gripper;
 Kinematics PT;
 // Connect to robot
 ur_rtde::RTDEControlInterface rtde_control("192.168.1.11");
@@ -57,7 +57,7 @@ void FromVectorToRobot::turnRingSides(std::vector<double> offset, bool downFirst
         move_to_side = PT.pose_trans(perpendicular_correct_grip_point, offset);
     } else {
         std::cout << "invalid face name" << std::endl;
-        exit;
+        exit(1);
     }
     std::vector<double> move_to_side_away = PT.pose_trans(move_to_side, back_10cm_z);
     std::vector<double> move_to_side_away_90degree_y = PT.pose_trans(move_to_side_away, ninety_deg_y); // just a midway calculation

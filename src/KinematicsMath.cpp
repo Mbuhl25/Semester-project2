@@ -11,44 +11,44 @@
 Kinematics::Kinematics() {}
 
 // Helper functions(makes sure that we can use the name of the poses)
-ur_rtde::PathEntry Kinematics::makeMoveL_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
-{
-    return ur_rtde::PathEntry{
-        ur_rtde::PathEntry::MoveL,
-        ur_rtde::PathEntry::PositionTcpPose,
-        {
-            pose[0], pose[1], pose[2],
-            pose[3], pose[4], pose[5],
-            speed, acceleration, blend
-        }
-    };
-}
+// ur_rtde::PathEntry Kinematics::makeMoveL_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+// {
+//     return ur_rtde::PathEntry{
+//         ur_rtde::PathEntry::MoveL,
+//         ur_rtde::PathEntry::PositionTcpPose,
+//         {
+//             pose[0], pose[1], pose[2],
+//             pose[3], pose[4], pose[5],
+//             speed, acceleration, blend
+//         }
+//     };
+// }
 
-ur_rtde::PathEntry Kinematics::makeMoveJ_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
-{
-    return ur_rtde::PathEntry{
-        ur_rtde::PathEntry::MoveJ,
-        ur_rtde::PathEntry::PositionTcpPose,
-        {
-            pose[0], pose[1], pose[2],
-            pose[3], pose[4], pose[5],
-            speed, acceleration, blend
-        }
-    };
-}
+// ur_rtde::PathEntry Kinematics::makeMoveJ_TCP(const std::vector<double>& pose, double speed, double acceleration, double blend)
+// {
+//     return ur_rtde::PathEntry{
+//         ur_rtde::PathEntry::MoveJ,
+//         ur_rtde::PathEntry::PositionTcpPose,
+//         {
+//             pose[0], pose[1], pose[2],
+//             pose[3], pose[4], pose[5],
+//             speed, acceleration, blend
+//         }
+//     };
+// }
 
-ur_rtde::PathEntry Kinematics::makeMoveJ_Q(const std::vector<double>& pose, double speed, double acceleration, double blend)
-{
-    return ur_rtde::PathEntry{
-        ur_rtde::PathEntry::MoveJ,
-        ur_rtde::PathEntry::PositionJoints,
-        {
-            pose[0], pose[1], pose[2],
-            pose[3], pose[4], pose[5],
-            speed, acceleration, blend
-        }
-    };
-}
+// ur_rtde::PathEntry Kinematics::makeMoveJ_Q(const std::vector<double>& pose, double speed, double acceleration, double blend)
+// {
+//     return ur_rtde::PathEntry{
+//         ur_rtde::PathEntry::MoveJ,
+//         ur_rtde::PathEntry::PositionJoints,
+//         {
+//             pose[0], pose[1], pose[2],
+//             pose[3], pose[4], pose[5],
+//             speed, acceleration, blend
+//         }
+//     };
+// }
 
 // Creates 3x3 Rotation matrix, the input is the data type -> Eigen::Vector3d with the rx ry rz values of the feature_pose
 Eigen::Matrix3d Kinematics::rodrigues(const Eigen::Vector3d& r)
