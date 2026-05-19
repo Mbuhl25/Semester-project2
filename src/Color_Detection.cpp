@@ -268,7 +268,7 @@ void Color_Detection::align_cube(){
 
 void Color_Detection::align_cube_countdown(){
     auto start_time = std::chrono::steady_clock::now();
-    int countdown_seconds = 5;
+    int countdown_seconds = 10;
 
     while (true) {
 

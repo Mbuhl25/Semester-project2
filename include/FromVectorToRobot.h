@@ -32,8 +32,8 @@ public:
     void MoveBPrime();
 
 private:
-    double speed = 0.1;
-    double acceleration = 0.1;
+    double speed = 0.5;
+    double acceleration = 0.5;
 };
 
 #endif

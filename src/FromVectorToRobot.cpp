@@ -46,7 +46,7 @@ void FromVectorToRobot::turnRingSides(std::vector<double> offset, bool downFirst
     std::vector<double> ninety_deg_y = {0, 0, 0, 0, 1.57, 0};
     std::vector<double> back_10cm_z = {0, 0, -0.1, 0, 0, 0};
     std::vector<double> forward_10cm_z = {0, 0, 0.1, 0, 0, 0};
-    std::vector<double> back_11cm_x = {-0.112, 0, 0, 0, 0, 0};
+    std::vector<double> back_11cm_x = {-0.114, 0, 0, 0, 0, 0};
 
 
     // Pose Transformations
@@ -194,11 +194,57 @@ void FromVectorToRobot::MoveB(){
 
 
 void FromVectorToRobot::MoveD(){
-    
+    // Movements
+    std::vector<double> forward_2cm_z = {0, 0, 0.02, 0, 0, 0};
+    std::vector<double> offset = {0, 0.02, 0, 0, 0, 0};
+    std::vector<double> back_10cm_z = {0, 0, -0.1, 0, 0, 0};
+
+    // Pose Transformations
+    std::vector<double> move_to_side_R = PT.pose_trans(perpendicular_correct_grip_point, offset);
+    std::vector<double> move_to_side_lower_R = PT.pose_trans(move_to_side_R, forward_2cm_z);
+    std::vector<double> move_to_side_away_R = PT.pose_trans(move_to_side_R, back_10cm_z);
+
+    std::vector<double> move_to_side_F = PT.pose_trans(parrallel_correct_grip_point, offset);
+    std::vector<double> move_to_side_lower_F = PT.pose_trans(move_to_side_F, forward_2cm_z);
+    std::vector<double> move_to_side_away_F = PT.pose_trans(move_to_side_F, back_10cm_z);
+
+
+    // Move commands
+    rtde_control.moveL(move_to_side_away_R, speed, acceleration);
+    rtde_control.moveL(move_to_side_lower_R, speed, acceleration);
+    // // gripper.gripperClose();
+    rtde_control.moveL(move_to_side_R, speed, acceleration);
+    rtde_control.moveL(move_to_side_F, speed, acceleration);
+    // // gripper.gripperOpen();
+    rtde_control.moveL(move_to_side_lower_F, speed, acceleration);
+    rtde_control.moveL(move_to_side_away_F, speed, acceleration);
 }
 
 void FromVectorToRobot::MoveDPrime(){
+    // Movements
+    std::vector<double> forward_2cm_z = {0, 0, 0.02, 0, 0, 0};
+    std::vector<double> offset = {0, 0.02, 0, 0, 0, 0};
+    std::vector<double> back_10cm_z = {0, 0, -0.1, 0, 0, 0};
 
+    // Pose Transformations
+    std::vector<double> move_to_side_R = PT.pose_trans(perpendicular_correct_grip_point, offset);
+    std::vector<double> move_to_side_lower_R = PT.pose_trans(move_to_side_R, forward_2cm_z);
+    std::vector<double> move_to_side_away_R = PT.pose_trans(move_to_side_R, back_10cm_z);
+
+    std::vector<double> move_to_side_F = PT.pose_trans(parrallel_correct_grip_point, offset);
+    std::vector<double> move_to_side_lower_F = PT.pose_trans(move_to_side_F, forward_2cm_z);
+    std::vector<double> move_to_side_away_F = PT.pose_trans(move_to_side_F, back_10cm_z);
+
+
+    // Move commands
+    rtde_control.moveL(move_to_side_away_F, speed, acceleration);
+    rtde_control.moveL(move_to_side_lower_F, speed, acceleration);
+    // // gripper.gripperClose();
+    rtde_control.moveL(move_to_side_F, speed, acceleration);
+    rtde_control.moveL(move_to_side_R, speed, acceleration);
+    // // gripper.gripperOpen();
+    rtde_control.moveL(move_to_side_lower_R, speed, acceleration);
+    rtde_control.moveL(move_to_side_away_R, speed, acceleration);
 }
 
 void getPosition() {
